@@ -1,8 +1,7 @@
 ﻿using ChessChallenge.API;
 using System;
-using System.Linq;
 
-public class AlphaBeta1BrainBot : AlphaBetaBrainBot
+public class AlphaBeta1BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta1BrainBot()
         :base(1)
@@ -10,7 +9,7 @@ public class AlphaBeta1BrainBot : AlphaBetaBrainBot
     }
 }
 
-public class AlphaBeta3BrainBot : AlphaBetaBrainBot
+public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta3BrainBot()
         : base(3)
@@ -19,7 +18,7 @@ public class AlphaBeta3BrainBot : AlphaBetaBrainBot
 }
 
 
-public class AlphaBeta4BrainBot : AlphaBetaBrainBot
+public class AlphaBeta4BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta4BrainBot()
         : base(4)
@@ -27,76 +26,11 @@ public class AlphaBeta4BrainBot : AlphaBetaBrainBot
     }
 }
 
-public class AlphaBeta5BrainBot : AlphaBetaBrainBot
+public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta5BrainBot()
         : base(5)
     {
-    }
-}
-
-public class AlphaBeta3OrderedBrainBot : AlphaBetaOrderedBrainBot
-{
-    public AlphaBeta3OrderedBrainBot()
-        : base(3)
-    {
-    }
-}
-
-public class AlphaBeta4OrderedBrainBot : AlphaBetaOrderedBrainBot
-{
-    public AlphaBeta4OrderedBrainBot()
-        : base(4)
-    {
-    }
-}
-
-public class AlphaBeta5OrderedBrainBot : AlphaBetaOrderedBrainBot
-{
-    public AlphaBeta5OrderedBrainBot()
-        : base(5)
-    {
-    }
-}
-
-public class AlphaBetaOrderedBrainBot : AlphaBetaBrainBot
-{
-    const int squareControlledByOpponentPawnPenalty = 350;
-    const int c_CapturedPieceValueMultiplier = 10;
-
-    public AlphaBetaOrderedBrainBot(int maxDepth)
-        :base(maxDepth)
-    {
-    }
-
-    protected override Move[] OrderMoves(Board board, Move[] allMoves)
-    {
-        return allMoves.OrderByDescending(move =>
-        {
-            int score = 0;
-            var movePieceType = board.GetPiece(move.TargetSquare).PieceType;
-            var capturePieceType = board.GetPiece(move.TargetSquare).PieceType;
-
-            if (capturePieceType != PieceType.None)
-            {
-                // Order moves to try capturing the most valuable opponent piece with least valuable of own pieces first
-                // The capturedPieceValueMultiplier is used to make even 'bad' captures like QxP rank above non-captures
-                score += c_CapturedPieceValueMultiplier * movePieceType.Value() - movePieceType.Value();
-            }
-
-            if (move.IsPromotion)
-            {
-                score += move.PromotionPieceType.Value();
-            }
-            else
-            {
-                // Penalize moving piece to a square attacked by opponent pawn
-                if (board.SquareIsAttackedByOpponent(move.TargetSquare))
-                    score -= squareControlledByOpponentPawnPenalty;
-            }
-
-            return score;
-        }).ToArray();
     }
 }
 
