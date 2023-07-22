@@ -7,6 +7,8 @@ public abstract class BrainBot : IChessBot
         Move[] allMoves = board.GetLegalMoves();
         var scoredMoves = new ScoredMoves();
 
+        bool isBotWhite = board.IsWhiteToMove;
+
         foreach (Move move in allMoves)
         {
             // get the captured piece
@@ -21,7 +23,7 @@ public abstract class BrainBot : IChessBot
             }
 
             // else evaluate the board position
-            var score = Evaluate(board, capturedPiece);
+            var score = Evaluate(board, capturedPiece, isBotWhite);
             scoredMoves.Add(new (move, score));
 
             board.UndoMove(move);
@@ -31,5 +33,5 @@ public abstract class BrainBot : IChessBot
         return scoredMoves.GetBestMove();
     }
 
-    public abstract int Evaluate(Board node, Piece capturedPiece);
+    public abstract int Evaluate(Board node, Piece capturedPiece, bool isWhite);
 }
