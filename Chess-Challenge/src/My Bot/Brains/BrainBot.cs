@@ -9,7 +9,10 @@ public abstract class BrainBot : IChessBot
 
         bool isBotWhite = board.IsWhiteToMove;
 
-        foreach (Move move in allMoves)
+        // optionnal order
+        var orderedMoves = OrderMoves(board, allMoves);
+
+        foreach (Move move in orderedMoves)
         {
             // get the captured piece
             Piece capturedPiece = board.GetPiece(move.TargetSquare);
@@ -34,4 +37,9 @@ public abstract class BrainBot : IChessBot
     }
 
     public abstract int Evaluate(Board node, Piece capturedPiece, bool isWhite);
+
+    protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
+    {
+        return allMoves;
+    }
 }

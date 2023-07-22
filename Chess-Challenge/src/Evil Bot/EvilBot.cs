@@ -3,7 +3,7 @@ using System;
 
 namespace ChessChallenge.Example
 {
-    public class EvilBot : MiniMax1BrainBot
+    public class EvilBot : AlphaBeta3BrainBot
     {
         
     }
