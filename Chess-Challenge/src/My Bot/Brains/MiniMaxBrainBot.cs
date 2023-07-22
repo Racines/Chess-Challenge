@@ -9,6 +9,14 @@ public class MiniMax1BrainBot : MiniMaxBrainBot
     }
 }
 
+public class MiniMax3BrainBot : MiniMaxBrainBot
+{
+    public MiniMax3BrainBot()
+        : base(3)
+    {
+    }
+}
+
 public class MiniMaxBrainBot : BrainBot
 {
     private int m_MaxDepth;
