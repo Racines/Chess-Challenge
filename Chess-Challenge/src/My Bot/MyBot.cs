@@ -1,6 +1,6 @@
 ﻿using ChessChallenge.API;
 
-public class MyBot : MiniMax3BrainBot
+public class MyBot : AlphaBeta3BrainBot
 {  
     
 }
