@@ -26,7 +26,7 @@ public class MiniMaxBrainBot : BrainBot
         m_MaxDepth = maxDepth;
     }
 
-    public override int Evaluate(Board node, Piece capturedPiece, bool isWhite)
+    public override int Evaluate(Board node, Move move, bool isWhite)
     {
         return MiniMax(node, m_MaxDepth, false);
     }

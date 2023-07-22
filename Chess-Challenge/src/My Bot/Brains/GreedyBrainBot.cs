@@ -3,8 +3,8 @@ using System;
 
 public class GreedyBrainBot : BrainBot
 {
-    public override int Evaluate(Board node, Piece capturedPiece, bool isWhite)
+    public override int Evaluate(Board node, Move move, bool isWhite)
     {
-        return capturedPiece.Value();
+        return move.CapturePieceType.Value();
     }
 }

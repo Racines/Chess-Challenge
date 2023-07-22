@@ -14,9 +14,6 @@ public abstract class BrainBot : IChessBot
 
         foreach (Move move in orderedMoves)
         {
-            // get the captured piece
-            Piece capturedPiece = board.GetPiece(move.TargetSquare);
-
             board.MakeMove(move);
 
             // Always play checkmate in one
@@ -26,7 +23,7 @@ public abstract class BrainBot : IChessBot
             }
 
             // else evaluate the board position
-            var score = Evaluate(board, capturedPiece, isBotWhite);
+            var score = Evaluate(board, move, isBotWhite);
             scoredMoves.Add(new (move, score));
 
             board.UndoMove(move);
@@ -36,7 +33,7 @@ public abstract class BrainBot : IChessBot
         return scoredMoves.GetBestMove();
     }
 
-    public abstract int Evaluate(Board node, Piece capturedPiece, bool isWhite);
+    public abstract int Evaluate(Board node, Move move, bool isWhite);
 
     protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
     {

@@ -109,7 +109,7 @@ public class AlphaBetaBrainBot : BrainBot
         m_MaxDepth = maxDepth;
     }
 
-    public override int Evaluate(Board node, Piece capturedPiece, bool isWhite)
+    public override int Evaluate(Board node, Move move, bool isWhite)
     {
         return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue, false);
     }
