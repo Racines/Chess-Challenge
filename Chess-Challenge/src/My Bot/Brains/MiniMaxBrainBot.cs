@@ -39,7 +39,7 @@ public class MiniMaxBrainBot : BrainBot
 
         // minimize or maximize the value depending on given maximizingPlayer
         int value = int.MinValue;
-        Func<int,int,int> func = Math.Max;
+        Func<int, int, int> func = Math.Max;
         if (!maximizingPlayer)
         {
             value = int.MaxValue;
