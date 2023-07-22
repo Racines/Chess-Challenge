@@ -30,6 +30,10 @@ internal static class BotHelpers
         if (node.IsInCheckmate())
             return node.IsWhiteToMove && isWhite ? int.MinValue : int.MaxValue;
 
+        // Heuristic value for draw 
+        if (node.IsDraw())
+            return 0;
+
         // Compute heuristic value based on the score of each team
         int heuristicValue = 0;
         var teamsPieces = node.GetAllPieceLists();
