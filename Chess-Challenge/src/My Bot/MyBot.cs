@@ -1,6 +1,6 @@
 ﻿using ChessChallenge.API;
 
-public class MyBot : GreedyBrainBot
+public class MyBot : MiniMax1BrainBot
 {  
     
 }
