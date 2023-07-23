@@ -41,7 +41,7 @@ public class AlphaBetaBrainBot : DepthBrainBot
     {
     }
 
-    public override int Evaluate(Board node, Move move, bool isWhite)
+    public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
     {
         return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue, false);
     }

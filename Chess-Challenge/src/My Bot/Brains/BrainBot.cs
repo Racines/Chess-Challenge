@@ -23,7 +23,7 @@ public abstract class BrainBot : IChessBot
             }
 
             // else evaluate the board position
-            var score = Evaluate(board, move, isBotWhite);
+            var score = Evaluate(board, timer, move, isBotWhite);
             scoredMoves.Add(new (move, score));
 
             board.UndoMove(move);
@@ -33,7 +33,7 @@ public abstract class BrainBot : IChessBot
         return scoredMoves.GetBestMove();
     }
 
-    public abstract int Evaluate(Board node, Move move, bool isWhite);
+    public abstract int Evaluate(Board node, Timer timer, Move move, bool isWhite);
 
     protected virtual int HeuristicValue(Board node, bool isWhite)
     {
