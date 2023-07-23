@@ -18,7 +18,6 @@ public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-
 public class AlphaBeta4BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta4BrainBot()
@@ -46,10 +45,6 @@ public class AlphaBeta5NoTranspositionBrainBot : AlphaBeta5BrainBot
 
 public class AlphaBetaBrainBot : DepthBrainBot
 {
-    private Dictionary<ulong, int> m_TranspositionTable = new Dictionary<ulong, int>();
-
-    protected bool m_UseTranspositionTable = true;
-
     public AlphaBetaBrainBot(int maxDepth)
         :base(maxDepth) 
     {
@@ -57,7 +52,6 @@ public class AlphaBetaBrainBot : DepthBrainBot
 
     public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
     {
-        m_TranspositionTable.Clear();
         return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue);
     }
 

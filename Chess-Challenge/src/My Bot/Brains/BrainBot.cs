@@ -1,12 +1,16 @@
 ﻿using ChessChallenge.API;
-using Microsoft.CodeAnalysis.CSharp;
 using System;
+using System.Collections.Generic;
 
 public abstract class BrainBot : IChessBot
 {
+    protected Dictionary<ulong, int> m_TranspositionTable = new Dictionary<ulong, int>();
+    protected bool m_UseTranspositionTable = true;
+
     public Move Think(Board board, Timer timer)
     {
         var scoredMoves = EvaluateLegalMoves(board, timer);
+        m_TranspositionTable.Clear();
 
         // return best move
         return scoredMoves.GetBestMove(board.IsWhiteToMove);
