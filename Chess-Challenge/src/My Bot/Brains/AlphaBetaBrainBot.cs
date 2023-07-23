@@ -34,13 +34,11 @@ public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBetaBrainBot : BrainBot
+public class AlphaBetaBrainBot : DepthBrainBot
 {
-    private int m_MaxDepth;
-
     public AlphaBetaBrainBot(int maxDepth)
+        :base(maxDepth) 
     {
-        m_MaxDepth = maxDepth;
     }
 
     public override int Evaluate(Board node, Move move, bool isWhite)

@@ -17,13 +17,12 @@ public class MiniMax3BrainBot : MiniMaxBrainBot
     }
 }
 
-public class MiniMaxBrainBot : BrainBot
+public class MiniMaxBrainBot : DepthBrainBot
 {
-    private int m_MaxDepth;
 
     public MiniMaxBrainBot(int maxDepth)
+        :base(maxDepth)
     {
-        m_MaxDepth = maxDepth;
     }
 
     public override int Evaluate(Board node, Move move, bool isWhite)
