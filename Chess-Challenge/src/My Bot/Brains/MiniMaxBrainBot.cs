@@ -27,14 +27,16 @@ public class MiniMaxBrainBot : DepthBrainBot
 
     public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
     {
-        return MiniMax(node, m_MaxDepth, false);
+        return MiniMax(node, m_MaxDepth);
     }
 
-    public int MiniMax(Board node, int depth, bool maximizingPlayer)
+    public int MiniMax(Board node, int depth)
     {
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
-            return HeuristicValue(node, maximizingPlayer && node.IsWhiteToMove);
+            return HeuristicValue(node);
+
+        bool maximizingPlayer = node.IsWhiteToMove;
 
         // minimize or maximize the value depending on given maximizingPlayer
         int value = int.MinValue;
@@ -51,7 +53,7 @@ public class MiniMaxBrainBot : DepthBrainBot
         {
             // compute the MiniMax on the current move
             node.MakeMove(move);
-            value = func(value, MiniMax(node, depth - 1, !maximizingPlayer));
+            value = func(value, MiniMax(node, depth - 1));
             node.UndoMove(move);
         }
 

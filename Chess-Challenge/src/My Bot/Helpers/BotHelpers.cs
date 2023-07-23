@@ -24,11 +24,11 @@ internal static class BotHelpers
         return isMate;
     }
 
-    public static int HeuristicValue(this Board node, bool isWhite)
+    public static int HeuristicValue(this Board node)
     {
         // Heuristic value for checkmate 
         if (node.IsInCheckmate())
-            return node.IsWhiteToMove && isWhite ? int.MinValue : int.MaxValue;
+            return node.IsWhiteToMove ? int.MinValue : int.MaxValue;
 
         // Heuristic value for draw 
         if (node.IsDraw())
@@ -43,7 +43,7 @@ internal static class BotHelpers
             int teamScore = teamPieces.TypeOfPieceInList.Value() * teamPieces.Count;
 
             // add or substract team score depending of isWhite value
-            if (teamPieces.IsWhitePieceList == isWhite)
+            if (teamPieces.IsWhitePieceList)
                 heuristicValue += teamScore;
             else
                 heuristicValue -= teamScore;

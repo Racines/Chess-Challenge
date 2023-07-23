@@ -1,8 +1,18 @@
 ﻿using ChessChallenge.API;
+using Microsoft.CodeAnalysis.CSharp;
+using System;
 
 public abstract class BrainBot : IChessBot
 {
     public Move Think(Board board, Timer timer)
+    {
+        var scoredMoves = EvaluateLegalMoves(board, timer);
+
+        // return best move
+        return scoredMoves.GetBestMove(board.IsWhiteToMove);
+    }
+
+    public ScoredMoves EvaluateLegalMoves(Board board, Timer timer)
     {
         Move[] allMoves = board.GetLegalMoves();
         var scoredMoves = new ScoredMoves();
@@ -14,30 +24,47 @@ public abstract class BrainBot : IChessBot
 
         foreach (Move move in orderedMoves)
         {
-            board.MakeMove(move);
-
-            // Always play checkmate in one
-            if (board.IsInCheckmate())
-            {
-                return move;
-            }
-
-            // else evaluate the board position
-            var score = Evaluate(board, timer, move, isBotWhite);
-            scoredMoves.Add(new (move, score));
-
-            board.UndoMove(move);
+            var scoredMove = EvaluateMove(board, timer, move, isBotWhite, out var isInCheckmate);
+            scoredMoves.Add(scoredMove);
+            if (isInCheckmate)
+                break;
         }
 
-        // return best move
-        return scoredMoves.GetBestMove();
+        return scoredMoves;
+    }
+
+    public ScoredMove EvaluateMove(Board board, Timer timer, Move move)
+    {
+        return EvaluateMove(board, timer, move, board.IsWhiteToMove, out _);
+    }
+
+    public ScoredMove EvaluateMove(Board board, Timer timer, Move move, bool isBotWhite, out bool isInCheckmate)
+    {
+        board.MakeMove(move);
+
+        int score = int.MinValue;
+        isInCheckmate = board.IsInCheckmate();
+
+        // Always play checkmate in one
+        if (isInCheckmate)
+        {
+            score = board.HeuristicValue();
+        }
+        else
+        {
+            // else evaluate the board position
+            score = Evaluate(board, timer, move, isBotWhite);
+        }
+
+        board.UndoMove(move);
+        return new(move, score);
     }
 
     public abstract int Evaluate(Board node, Timer timer, Move move, bool isWhite);
 
-    protected virtual int HeuristicValue(Board node, bool isWhite)
+    protected virtual int HeuristicValue(Board node)
     {
-        return node.HeuristicValue(isWhite);
+        return node.HeuristicValue();
     }
 
     protected virtual Move[] OrderMoves(Board board, Move[] allMoves)

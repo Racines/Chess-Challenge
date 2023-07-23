@@ -1,5 +1,6 @@
 ﻿using ChessChallenge.API;
 using System;
+using System.Collections.Generic;
 
 public class AlphaBeta1BrainBot : AlphaBetaOrderedBrainBot
 {
@@ -34,8 +35,21 @@ public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
+public class AlphaBeta5NoTranspositionBrainBot : AlphaBeta5BrainBot
+{
+    public AlphaBeta5NoTranspositionBrainBot()
+        : base()
+    {
+        m_UseTranspositionTable = false;
+    }
+}
+
 public class AlphaBetaBrainBot : DepthBrainBot
 {
+    private Dictionary<ulong, int> m_TranspositionTable = new Dictionary<ulong, int>();
+
+    protected bool m_UseTranspositionTable = true;
+
     public AlphaBetaBrainBot(int maxDepth)
         :base(maxDepth) 
     {
@@ -43,18 +57,30 @@ public class AlphaBetaBrainBot : DepthBrainBot
 
     public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
     {
-        return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue, false);
+        m_TranspositionTable.Clear();
+        return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue);
     }
 
-    public int AlphaBeta(Board node, int depth, int alpha, int beta, bool maximizingPlayer)
+    public int AlphaBeta(Board node, int depth, int alpha, int beta)
     {
+        int value = int.MinValue;
+        if (m_UseTranspositionTable && m_TranspositionTable.TryGetValue(node.ZobristKey, out value))
+            return value;
+
+        var maximizingPlayer = node.IsWhiteToMove;
+
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
-            return HeuristicValue(node, maximizingPlayer && node.IsWhiteToMove);
+        {
+            value = HeuristicValue(node);
+            if (m_UseTranspositionTable)
+                m_TranspositionTable.Add(node.ZobristKey, value);
+            return value;
+        }
 
         // minimize or maximize the value depending on given maximizingPlayer
-        int value = int.MinValue;
-        Func<int, int, int> func = Math.Max;
+        Func<int, int, int> func = Math.Max; 
+        value = int.MinValue;
         if (!maximizingPlayer)
         {
             value = int.MaxValue;
@@ -70,29 +96,31 @@ public class AlphaBetaBrainBot : DepthBrainBot
         {
             // compute the AlphaBeta on the current move
             node.MakeMove(move);
-            value = func(value, AlphaBeta(node, depth - 1, alpha, beta, !maximizingPlayer));
+            value = func(value, AlphaBeta(node, depth - 1, alpha, beta));
             node.UndoMove(move);
 
             if (maximizingPlayer)
             {
                 // check beta pruning
-                if (value >= beta)
-                    return value;
+                if (value >= beta) 
+                    break;
 
                 // update alpha value
                 alpha = func(alpha, value);
             }
             else
-            { 
+            {
                 // check alpha pruning
                 if (alpha >= value)
-                return value;
+                    break;
 
                 // update beta value
                 beta = func(beta, value);
             }
         }
 
+        if (m_UseTranspositionTable)
+            m_TranspositionTable.TryAdd(node.ZobristKey, value);
         return value;
     }
 }

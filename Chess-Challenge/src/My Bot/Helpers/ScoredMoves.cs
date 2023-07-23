@@ -12,10 +12,15 @@ public class ScoredMoves : List<ScoredMove>
     /// Get random move among best moves
     /// </summary>
     /// <returns></returns>
-    public Move GetBestMove()
+    public Move GetBestMove(bool isMaximizing)
     {
-        var maxScore = this.Max(x => x.Score);
-        var bestMoves = this.Where(x => x.Score >= maxScore).ToArray();
+        var score = 0;
+        if (isMaximizing)
+            score = this.Max(x => x.Score);
+        else
+            score = this.Min(x => x.Score);
+
+        var bestMoves = this.Where(x => x.Score == score).ToArray();
 
         // Select random move among best moves
         return bestMoves[s_Rng.Next(bestMoves.Length)].Move;
