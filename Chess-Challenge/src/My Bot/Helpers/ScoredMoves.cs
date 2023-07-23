@@ -1,9 +1,18 @@
 ﻿using ChessChallenge.API;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
-public record class ScoredMove(Move Move, int Score);
+public record class ScoredMove(Move Move, int Score)
+{
+    public override string ToString()
+    {
+        return $"({Move}, {Score})";
+    }
+}
+
 public class ScoredMoves : List<ScoredMove>
 {
     static Random s_Rng = new();
@@ -24,5 +33,21 @@ public class ScoredMoves : List<ScoredMove>
 
         // Select random move among best moves
         return bestMoves[s_Rng.Next(bestMoves.Length)].Move;
+    }
+
+    public void SortByScoreDesc()
+    {
+        this.Sort((a, b) => b.Score.CompareTo(a.Score));
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var scoredMove in this)
+        {
+            sb.AppendLine(scoredMove.ToString());
+        }
+
+        return sb.ToString();
     }
 }
