@@ -35,6 +35,11 @@ public abstract class BrainBot : IChessBot
 
     public abstract int Evaluate(Board node, Move move, bool isWhite);
 
+    protected virtual int HeuristicValue(Board node, bool isWhite)
+    {
+        return node.HeuristicValue(isWhite);
+    }
+
     protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
     {
         return allMoves;
