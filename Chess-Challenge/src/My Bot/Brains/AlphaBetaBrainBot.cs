@@ -10,6 +10,14 @@ public class AlphaBeta1BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
+public class AlphaBeta2BrainBot : AlphaBetaOrderedBrainBot
+{
+    public AlphaBeta2BrainBot()
+        : base(2)
+    {
+    }
+}
+
 public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta3BrainBot()
