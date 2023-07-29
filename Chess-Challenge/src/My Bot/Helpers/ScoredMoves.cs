@@ -38,6 +38,14 @@ public class ScoredMoves : List<ScoredMove>
     public void SortByScoreDesc()
     {
         this.Sort((a, b) => b.Score.CompareTo(a.Score));
+        this.Sort((a, b) =>
+        {
+            var diff = b.Score.CompareTo(a.Score);
+            if (diff != 0)
+                return diff;
+
+            return a.Move.ToString().CompareTo(b.Move.ToString());
+        });
     }
 
     public override string ToString()
