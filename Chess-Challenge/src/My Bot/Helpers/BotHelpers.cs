@@ -1,6 +1,6 @@
 ﻿using ChessChallenge.API;
 
-internal static class BotHelpers
+public static class BotHelpers
 {
     // Piece values: null, pawn, knight, bishop, rook, queen, king
     static int[] s_PieceValues = { 0, 100, 300, 300, 500, 900, 10000 };

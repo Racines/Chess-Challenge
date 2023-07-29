@@ -66,7 +66,7 @@ public class AlphaBetaBrainBot : DepthBrainBot
     public int AlphaBeta(Board node, int depth, int alpha, int beta)
     {
         int value = int.MinValue;
-        if (m_UseTranspositionTable && m_TranspositionTable.TryGetValue(node.ZobristKey, out value))
+        if (m_UseTranspositionTable && m_TranspositionTable.TryGetValue(node, depth, alpha, beta, out value))
             return value;
 
         var maximizingPlayer = node.IsWhiteToMove;
@@ -76,7 +76,7 @@ public class AlphaBetaBrainBot : DepthBrainBot
         {
             value = HeuristicValue(node);
             if (m_UseTranspositionTable)
-                m_TranspositionTable.Add(node.ZobristKey, value);
+                m_TranspositionTable.TryAdd(node, depth, value, ETranspositionTableNodeType.Exact);
             return value;
         }
 
@@ -122,7 +122,11 @@ public class AlphaBetaBrainBot : DepthBrainBot
         }
 
         if (m_UseTranspositionTable)
-            m_TranspositionTable.TryAdd(node.ZobristKey, value);
+        {
+            var temp = !maximizingPlayer ? ETranspositionTableNodeType.UpperBound : ETranspositionTableNodeType.LowerBound;
+            m_TranspositionTable.TryAdd(node, depth, value, temp);
+        }
+
         return value;
     }
 }
