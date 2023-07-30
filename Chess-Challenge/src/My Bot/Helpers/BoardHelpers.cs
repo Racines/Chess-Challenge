@@ -124,8 +124,8 @@ public static class BoardHelpers
         var pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
         var pawnShieldBitboard = kingAttacksBitboard & pawnBitboard;
         var pawnShieldCount = CustomBitboardHelper.CountBits(pawnShieldBitboard);
-        
-        BitboardHelper.VisualizeBitboard(pawnShieldBitboard);
+
+        //BitboardHelper.VisualizeBitboard(pawnShieldBitboard);
 
         return pawnShieldCount;
     }
