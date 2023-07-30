@@ -103,4 +103,32 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Kingpawnshield
+
+    /// <summary>
+    /// Kingpawnshield is the number of pawns of Player A adjacent to Player A’s king. Pawn shield is
+    /// an important parameter for evaluating the king safety
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Kingpawnshield(this Board board)
+    {
+        return Kingpawnshield(board, true) - Kingpawnshield(board, false);
+    }
+
+    public static int Kingpawnshield(this Board board, bool isWhite)
+    {
+        var kingAttacksBitboard = BitboardHelper.GetKingAttacks(board.GetKingSquare(isWhite));
+        var pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
+        var pawnShieldBitboard = kingAttacksBitboard & pawnBitboard;
+        var pawnShieldCount = CustomBitboardHelper.CountBits(pawnShieldBitboard);
+        
+        BitboardHelper.VisualizeBitboard(pawnShieldBitboard);
+
+        return pawnShieldCount;
+    }
+
+    #endregion
 }
