@@ -16,7 +16,7 @@ public abstract class BrainBot : IChessBot
         return scoredMoves.GetBestMove(board.IsWhiteToMove);
     }
 
-    public ScoredMoves EvaluateLegalMoves(Board board, Timer timer)
+    public ScoredMoves EvaluateLegalMoves(Board board, Timer timer, bool breakAtCheckMate = true)
     {
         Move[] allMoves = board.GetLegalMoves();
         var scoredMoves = new ScoredMoves();
@@ -30,7 +30,7 @@ public abstract class BrainBot : IChessBot
         {
             var scoredMove = EvaluateMove(board, timer, move, isBotWhite, out var isInCheckmate);
             scoredMoves.Add(scoredMove);
-            if (isInCheckmate)
+            if (isInCheckmate && breakAtCheckMate)
                 break;
         }
 
