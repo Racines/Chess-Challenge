@@ -1,10 +1,13 @@
-﻿using ChessChallenge.API;
+﻿using Chess_Challenge.src.My_Bot.Evaluator;
+using ChessChallenge.API;
 using System;
 
 public abstract class BrainBot : IChessBot
 {
     protected DepthTranspositionTable m_TranspositionTable = new ();
     protected bool m_UseTranspositionTable = true;
+    protected BoardEvaluator m_BoardEvaluator = new BasicBoardEvaluator();
+
 
     public bool UseTranspositionTable { get => m_UseTranspositionTable; set => m_UseTranspositionTable = value; }
 
@@ -54,7 +57,7 @@ public abstract class BrainBot : IChessBot
         // Always play checkmate in one
         if (isInCheckmate)
         {
-            score = board.HeuristicValue();
+            score = m_BoardEvaluator.Evaluate(board);
         }
         else
         {
@@ -67,11 +70,6 @@ public abstract class BrainBot : IChessBot
     }
 
     public abstract int Evaluate(Board node, Timer timer, Move move, bool isWhite);
-
-    protected virtual int HeuristicValue(Board node)
-    {
-        return node.HeuristicValue();
-    }
 
     protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
     {

@@ -92,7 +92,7 @@ public class AlphaBetaBrainBot : DepthBrainBot
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
         {
-            value = HeuristicValue(node);
+            value = m_BoardEvaluator.Evaluate(node);
             if (m_UseTranspositionTable)
                 m_TranspositionTable.TryAdd(node, depth, value, ETranspositionTableNodeType.Exact);
             return value;

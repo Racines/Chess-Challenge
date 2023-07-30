@@ -34,7 +34,7 @@ public class MiniMaxBrainBot : DepthBrainBot
     {
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
-            return HeuristicValue(node);
+            return m_BoardEvaluator.Evaluate(node);
 
         bool maximizingPlayer = node.IsWhiteToMove;
 
