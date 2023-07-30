@@ -61,4 +61,46 @@ public static class BoardHelpers
     {
         return s_PieceValues[(int)pieceType];
     }
+    static BoardHelpers()
+    {
+        InitCenterpawnBitboard();
+    }
+
+    #region Centerpawncount
+
+    private static ulong s_CenterpawnBitboard;
+
+    private static void InitCenterpawnBitboard()
+    {
+        BitboardHelper.SetSquare(ref s_CenterpawnBitboard, new Square("d4"));
+        BitboardHelper.SetSquare(ref s_CenterpawnBitboard, new Square("d5"));
+        BitboardHelper.SetSquare(ref s_CenterpawnBitboard, new Square("e4"));
+        BitboardHelper.SetSquare(ref s_CenterpawnBitboard, new Square("e5"));
+
+        //BitboardHelper.VisualizeBitboard(s_CenterpawnBitboard);
+    }
+
+    /// <summary>
+    /// Centerpawncount is the number of pawns of Player A that are in squares e4,e5,d4 or d5. Center
+    /// pawns are important for controlling the center and decreasing enemy mobility.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Centerpawncount(this Board board)
+    {
+        return Centerpawncount(board, true) - Centerpawncount(board, false);
+    }
+
+    public static int Centerpawncount(this Board board, bool isWhite)
+    {
+        var pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, true);
+        var pawnAtCenterBitboard = pawnBitboard & s_CenterpawnBitboard;
+        var pawnAtCenterCount = CustomBitboardHelper.CountBits(pawnAtCenterBitboard);
+
+        //BitboardHelper.VisualizeBitboard(whitePawnAtCenterBitboard);
+
+        return pawnAtCenterCount;
+    }
+
+    #endregion
 }

@@ -7,12 +7,15 @@ public abstract class BrainBot : IChessBot
     protected DepthTranspositionTable m_TranspositionTable = new ();
     protected bool m_UseTranspositionTable = true;
     protected BoardEvaluator m_BoardEvaluator = new BasicBoardEvaluator();
+    protected BoardEvaluator m_DebugBoardEvaluator = new DebugBoardEvaluator();
 
 
     public bool UseTranspositionTable { get => m_UseTranspositionTable; set => m_UseTranspositionTable = value; }
 
     public Move Think(Board board, Timer timer)
     {
+        m_DebugBoardEvaluator?.Evaluate(board);
+
         var scoredMoves = EvaluateLegalMoves(board, timer);
 
         // return best move
