@@ -131,4 +131,99 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Kingattacked
+
+    /// <summary>
+    /// Kingdefended is the material value of the pieces of the Player A that are acting on Player A’s king’s
+    /// adjacent squares.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Kingattacked(this Board board)
+    {
+        return Kingattacked(board, true) - Kingdefended(board, false);
+    }
+
+    public static int Kingattacked(this Board board, bool isWhite)
+    {
+        int defendedValue = 0;
+
+        var attackedBitboard = 0ul;
+        var kingAttacksBitboard = BitboardHelper.GetKingAttacks(board.GetKingSquare(isWhite));
+        foreach (var pieceList in board.GetAllPieceLists())
+        {
+            // ignore friendly pieces
+            if (pieceList.IsWhitePieceList == isWhite)
+                continue;
+
+            // sum pieces value that are attacking the king
+            foreach (var piece in pieceList)
+            {
+                var pieceAttackBitboard = BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite);
+                ulong pieaceAttackKingBitboard = pieceAttackBitboard & kingAttacksBitboard;
+                attackedBitboard |= pieaceAttackKingBitboard;
+
+                var isDefended = pieaceAttackKingBitboard != 0;
+                if (isDefended)
+                    defendedValue += piece.Value();
+            }
+        }
+
+        //BitboardHelper.VisualizeBitboard(attackedBitboard);
+
+        return 0;
+    }
+
+    #endregion
+
+
+    #region Kingdefended
+
+    /// <summary>
+    /// Kingdefended is the material value of the pieces of the Player A that are acting on Player A’s king’s
+    /// adjacent squares.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Kingdefended(this Board board)
+    {
+        return Kingdefended(board, true) - Kingdefended(board, false);
+    }
+
+    public static int Kingdefended(this Board board, bool isWhite)
+    {
+        int defendedValue = 0;
+
+        var defendedBitboard = 0ul;
+        var kingAttacksBitboard = BitboardHelper.GetKingAttacks(board.GetKingSquare(isWhite));
+        foreach (var pieceList in board.GetAllPieceLists())
+        {
+            // ignore enemy pieces
+            if (pieceList.IsWhitePieceList != isWhite)
+                continue;
+
+            if (pieceList.TypeOfPieceInList == PieceType.King)
+                continue;
+
+            // sum pieces value that are defending the king
+            foreach (var piece in pieceList)
+            {
+                var pieceAttackBitboard = BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite);
+                ulong pieceDefendKingBitboard = pieceAttackBitboard & kingAttacksBitboard;
+                defendedBitboard |= pieceDefendKingBitboard;
+
+                var isDefended = pieceDefendKingBitboard != 0;
+                if (isDefended)
+                    defendedValue += piece.Value();
+            }
+        }
+
+        BitboardHelper.VisualizeBitboard(defendedBitboard);
+
+        return 0;
+    }
+
+    #endregion
 }
