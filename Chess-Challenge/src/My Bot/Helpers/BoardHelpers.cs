@@ -61,6 +61,35 @@ public static class BoardHelpers
     {
         return s_PieceValues[(int)pieceType];
     }
+
+    public static ulong TeamAttackedBitboard(this Board board, bool isWhite)
+    {
+        ulong opponentAttackedBitboard = 0;
+        foreach (var piecesList in board.GetAllPieceLists())
+        {
+            // ignore opponent pieces
+            if (piecesList.IsWhitePieceList != isWhite)
+                continue;
+
+            opponentAttackedBitboard |= TeamAttackedBitboard(board, piecesList);
+        }
+
+        return opponentAttackedBitboard;
+    }
+
+    private static ulong TeamAttackedBitboard(this Board board, PieceList piecesList)
+    {
+        ulong opponentAttackedBitboard = 0;
+
+        foreach (var piece in piecesList)
+        {
+            var pieceAttackBitboard = BitboardHelper.GetPieceAttacks(piece.PieceType, piece.Square, board, piece.IsWhite);
+            opponentAttackedBitboard |= pieceAttackBitboard;
+        }
+
+        return opponentAttackedBitboard;
+    }
+
     static BoardHelpers()
     {
         InitCenterpawnBitboard();
@@ -223,6 +252,28 @@ public static class BoardHelpers
         BitboardHelper.VisualizeBitboard(defendedBitboard);
 
         return 0;
+    }
+
+    #endregion
+
+
+    #region Bishopmob
+
+    public static int Bishopmob(this Board board)
+    {
+        return Bishopmob(board, true) - Bishopmob(board, false);
+    }
+
+    public static int Bishopmob(this Board board, bool isWhite)
+    {
+        PieceList piecesList = board.GetPieceList(PieceType.Bishop, isWhite);
+        var bishopAttackBitboard = TeamAttackedBitboard(board, piecesList);
+        var opponentAttackedBitboard = TeamAttackedBitboard(board, !isWhite);
+        var bishopAttacks = bishopAttackBitboard & ~opponentAttackedBitboard;
+
+        //BitboardHelper.VisualizeBitboard(bishopAttacks);
+
+        return CustomBitboardHelper.CountBits(bishopAttacks);
     }
 
     #endregion
