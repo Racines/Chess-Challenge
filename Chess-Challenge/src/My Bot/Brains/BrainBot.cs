@@ -6,6 +6,8 @@ public abstract class BrainBot : IChessBot
     protected DepthTranspositionTable m_TranspositionTable = new ();
     protected bool m_UseTranspositionTable = true;
 
+    public bool UseTranspositionTable { get => m_UseTranspositionTable; set => m_UseTranspositionTable = value; }
+
     public Move Think(Board board, Timer timer)
     {
         var scoredMoves = EvaluateLegalMoves(board, timer);

@@ -26,11 +26,28 @@ public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
+public class AlphaBeta3NoTranspositionBrainBot : AlphaBeta3BrainBot
+{
+    public AlphaBeta3NoTranspositionBrainBot()
+        : base()
+    {
+        m_UseTranspositionTable = false;
+    }
+}
+
 public class AlphaBeta4BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta4BrainBot()
         : base(4)
     {
+    }
+}
+public class AlphaBeta4NoTranspositionBrainBot : AlphaBeta4BrainBot
+{
+    public AlphaBeta4NoTranspositionBrainBot()
+        : base()
+    {
+        m_UseTranspositionTable = false;
     }
 }
 
@@ -60,6 +77,7 @@ public class AlphaBetaBrainBot : DepthBrainBot
 
     public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
     {
+        m_TranspositionTable.Clear();
         return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue);
     }
 
