@@ -260,6 +260,12 @@ public static class BoardHelpers
 
     #region Bishopmob
 
+    /// <summary>
+    /// Bishopmob is the number of squares that a bishop can go to. This type of parameters are calculated
+    /// seperately for each bishop
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
     public static int Bishopmob(this Board board)
     {
         return Bishopmob(board, true) - Bishopmob(board, false);
@@ -284,6 +290,9 @@ public static class BoardHelpers
 
     private static ulong s_BishoponlargeBitboard;
 
+    /// <summary>
+    /// Generate large diagonals bitboard
+    /// </summary>
     private static void InitBishoponlargeBitboard()
     {
         for (int file = 0; file < 8; file++)
@@ -298,6 +307,14 @@ public static class BoardHelpers
         //BitboardHelper.VisualizeBitboard(s_BishoponlargeBitboard);
     }
 
+    /// <summary>
+    /// Bishoponlarge parameter returns 1 if the bishop on the given square is one of the two large diagonals
+    /// of the board.Bishops are stronger on the large diagonals because they have higher mobility and
+    /// they are reaching the two central squares simultaneously controlling the center
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="isWhite"></param>
+    /// <returns></returns>
     public static int Bishoponlarge(this Board board)
     {
         return Bishoponlarge(board, true) - Bishoponlarge(board, false);
