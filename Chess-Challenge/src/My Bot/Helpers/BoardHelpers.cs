@@ -308,9 +308,9 @@ public static class BoardHelpers
     }
 
     /// <summary>
-    /// Bishoponlarge parameter returns 1 if the bishop on the given square is one of the two large diagonals
-    /// of the board.Bishops are stronger on the large diagonals because they have higher mobility and
-    /// they are reaching the two central squares simultaneously controlling the center
+    /// Bishoponlarge parameter returns the number of bishop placed on one of the two large diagonals
+    /// of the board. Bishops are stronger on the large diagonals because they have higher mobility and
+    /// they are reaching the two central squares simultaneously controlling the center.
     /// </summary>
     /// <param name="board"></param>
     /// <param name="isWhite"></param>
@@ -332,8 +332,7 @@ public static class BoardHelpers
         ulong bishopsOnLargeBitboard = bishopsSquareBitboard & s_BishoponlargeBitboard;
         //BitboardHelper.VisualizeBitboard(bishopsOnLargeBitboard);
 
-        var isOnLarge = bishopsOnLargeBitboard != 0;
-        return isOnLarge ? 1 : 0;
+        return CustomBitboardHelper.CountBits(bishopsOnLargeBitboard);
     }
 
     #endregion
