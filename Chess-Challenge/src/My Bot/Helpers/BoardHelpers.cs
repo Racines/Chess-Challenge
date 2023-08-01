@@ -363,4 +363,31 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Knightmob
+    
+    public static int Knightmob(this Board board)
+    { 
+        return Knightmob(board, true) - Knightmob(board, false);
+    }
+
+    public static int Knightmob(this Board board, bool isWhite)
+    {
+        ulong possibleKnightMovesBitboard = 0;
+        var piecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+
+        var knights = board.GetPieceList(PieceType.Knight, isWhite);
+        foreach (var knight in knights)
+        {
+            var knightAttackBitboard = BitboardHelper.GetKnightAttacks(knight.Square);
+            possibleKnightMovesBitboard |= knightAttackBitboard & ~piecesBitboard;
+        }
+
+        //BitboardHelper.VisualizeBitboard(possibleKnightMovesBitboard);
+
+        return CustomBitboardHelper.CountBits(possibleKnightMovesBitboard);
+    }
+
+    #endregion
 }
