@@ -298,7 +298,12 @@ public static class BoardHelpers
         //BitboardHelper.VisualizeBitboard(s_BishoponlargeBitboard);
     }
 
-    public static int Bishoponlarge(this Board board, bool isWhite) 
+    public static int Bishoponlarge(this Board board)
+    {
+        return Bishoponlarge(board, true) - Bishoponlarge(board, false);
+    }
+
+    public static int Bishoponlarge(this Board board, bool isWhite)
     {
         var bishops = board.GetPieceList(PieceType.Bishop, isWhite);
         ulong bishopsSquareBitboard = 0;
