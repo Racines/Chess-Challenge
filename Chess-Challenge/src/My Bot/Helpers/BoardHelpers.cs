@@ -337,4 +337,30 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Bishoppair
+
+    /// <summary>
+    /// Bishoppair returns 1 if Player A has two or more bishops. Bishop pairs are generally considered
+    /// an advantage as to bishops can together cover all possible squares regardless of the color of the
+    /// square.Bishop pairs are especially strong in open positions where there are no central pawns and
+    /// the bishops can move freely to create threats.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Bishoppair(this Board board)
+    {
+        return Bishoppair(board, true) - Bishoppair(board, false);
+    }
+
+    public static int Bishoppair(this Board board, bool isWhite)
+    {
+        var bishops = board.GetPieceList(PieceType.Bishop, isWhite);
+        var hasBishopPair = bishops.Count >= 2;
+
+        return hasBishopPair ? 1 : 0;
+    }
+
+    #endregion
 }
