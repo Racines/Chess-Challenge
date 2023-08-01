@@ -1,4 +1,5 @@
 ﻿using ChessChallenge.API;
+using System;
 
 public static class BoardHelpers
 {
@@ -436,6 +437,60 @@ public static class BoardHelpers
         //BitboardHelper.VisualizeBitboard(knightSupportedBitboard);
 
         return CustomBitboardHelper.CountBits(knightSupportedBitboard);
+    }
+
+    #endregion
+
+
+    #region Knightperipheries
+
+    /// <summary>
+    /// Knightperiphery0 returns 1 if a given knight is on the squares a1 to a8,a8 to h8,a1 to h1 or h1 to h8.
+    /// This is the outest periphery and most of the times knights on these squares are weaker.
+    /// Knightperiphery1 returns 1 if a given knight is on the squares b2 to b7,b7 to g7,b2 to g2 or g2 to g7.
+    /// Knightperiphery2 returns 1 if a given knight is on the squares c3 to c6,c6 to f6,c3 to f3 or f3 to f6.
+    /// Knightperiphery3 returns 1 if a given knight is on the squares e4, e5,d4 or d5.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <param name="peripheryIndex"></param>
+    /// <returns></returns>
+    public static int Knightperiphery(this Board board, int peripheryIndex)
+    {
+        return Knightperiphery(board, true, peripheryIndex) - Knightperiphery(board, false, peripheryIndex);
+    }
+
+    public static int Knightperiphery(this Board board, bool isWhite, int peripheryIndex)
+    {
+        int knightPeripheryCount = 0;
+
+        var knights = board.GetPieceList(PieceType.Knight, isWhite);
+        foreach (var knight in knights)
+        {
+            Square sq = knight.Square;
+
+            if (sq.Rank == peripheryIndex &&
+                sq.File >= peripheryIndex &&
+                sq.File < 7 - peripheryIndex 
+                ||
+                sq.File == peripheryIndex &&
+                sq.Rank >= peripheryIndex &&
+                sq.Rank < 7 - peripheryIndex
+                ||
+                sq.File == 7 - peripheryIndex &&
+                sq.Rank >= peripheryIndex &&
+                sq.Rank < 7 - peripheryIndex
+                ||
+                sq.File == 7 - peripheryIndex &&
+                sq.Rank >= peripheryIndex &&
+                sq.Rank < 7 - peripheryIndex)
+            {
+                ++knightPeripheryCount;
+            }
+        }
+
+        //Console.WriteLine($"knightPeripheryCount: {knightPeripheryCount}");
+
+        return knightPeripheryCount;
     }
 
     #endregion
