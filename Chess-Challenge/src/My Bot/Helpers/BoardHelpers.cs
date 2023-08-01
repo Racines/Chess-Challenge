@@ -494,4 +494,55 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Isopawn
+
+    /// <summary>
+    /// Isopawn count the number of pawn that has no neighboring pawns of the same color. Isolated pawns
+    /// are generally considered as a weakness since they cannot be protected by pawns so they should be
+    /// protected by other more valuable pieces.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Isopawn(this Board board)
+    {
+        return Isopawn(board, true) - Isopawn(board, false);
+    }
+
+    public static int Isopawn(this Board board, bool isWhite) 
+    {
+        int isoPawnCount = 0;
+
+        uint flattenPawnSquareBitboard = 0;
+
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+        foreach (var pawn in pawns)
+        {
+            flattenPawnSquareBitboard |= 1u << pawn.Square.File;
+        }
+        //Console.WriteLine($"flattenPawnSquareBitboard: {Convert.ToString(flattenPawnSquareBitboard, 2)}");
+
+        uint isoPattern = 0b101;
+        for (int i = 0; i <= 7; i++)
+        {
+            // ignore if not pawn
+            if ((flattenPawnSquareBitboard & (1 << i)) == 0)
+                continue;
+
+            uint shiftedIsoPattern = isoPattern << (i - 1);
+            if(i == 0)
+                shiftedIsoPattern = isoPattern >> 1;
+
+            var isIso = (shiftedIsoPattern & flattenPawnSquareBitboard) == 0;
+            if (isIso)
+                ++isoPawnCount;
+        }
+
+        //Console.WriteLine($"isoPawnCount: {isoPawnCount}");
+
+        return 0;
+    }
+
+    #endregion
 }
