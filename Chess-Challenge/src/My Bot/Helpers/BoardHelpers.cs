@@ -93,6 +93,7 @@ public static class BoardHelpers
     static BoardHelpers()
     {
         InitCenterpawnBitboard();
+        InitBishoponlargeBitboard();
     }
 
     #region Centerpawncount
@@ -274,6 +275,43 @@ public static class BoardHelpers
         //BitboardHelper.VisualizeBitboard(bishopAttacks);
 
         return CustomBitboardHelper.CountBits(bishopAttacks);
+    }
+
+    #endregion
+
+
+    #region Bishoponlarge
+
+    private static ulong s_BishoponlargeBitboard;
+
+    private static void InitBishoponlargeBitboard()
+    {
+        for (int file = 0; file < 8; file++)
+        {
+            for (int rank = 0; rank < 8; rank++)
+            {
+                if (file == rank || file == 7 - rank)
+                    BitboardHelper.SetSquare(ref s_BishoponlargeBitboard, new Square(file, rank));
+            }
+        }
+
+        //BitboardHelper.VisualizeBitboard(s_BishoponlargeBitboard);
+    }
+
+    public static int Bishoponlarge(this Board board, bool isWhite) 
+    {
+        var bishops = board.GetPieceList(PieceType.Bishop, isWhite);
+        ulong bishopsSquareBitboard = 0;
+        foreach (var bishop in bishops)
+        {
+            BitboardHelper.SetSquare(ref bishopsSquareBitboard, bishop.Square);
+        }
+
+        ulong bishopsOnLargeBitboard = bishopsSquareBitboard & s_BishoponlargeBitboard;
+        //BitboardHelper.VisualizeBitboard(bishopsOnLargeBitboard);
+
+        var isOnLarge = bishopsOnLargeBitboard != 0;
+        return isOnLarge ? 1 : 0;
     }
 
     #endregion
