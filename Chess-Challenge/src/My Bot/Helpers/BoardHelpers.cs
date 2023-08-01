@@ -366,7 +366,12 @@ public static class BoardHelpers
 
 
     #region Knightmob
-    
+
+    /// <summary>
+    /// Knightmob is the number of squares that a specific knight can go to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
     public static int Knightmob(this Board board)
     { 
         return Knightmob(board, true) - Knightmob(board, false);
