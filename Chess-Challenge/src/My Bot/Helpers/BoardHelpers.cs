@@ -395,4 +395,49 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Knightsupport
+
+    /// <summary>
+    /// Knightsupport returns 1 per knight on a given square that is supported by ones own pawn.
+    /// Supported knights are strong because they can only be backfired by pawns and since they are
+    /// supported they can stay in an important position for a long number of moves making it harder for
+    /// the opponent to play around it.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Knightsupport(this Board board)
+    {
+        return Knightsupport(board, true) - Knightsupport(board, false);
+    }
+
+    public static int Knightsupport(this Board board, bool isWhite)
+    {
+        ulong knightsSquareBitboard = 0;
+        ulong pawnsAttackBitboard = 0;
+
+        var knights = board.GetPieceList(PieceType.Knight, isWhite);
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+
+        foreach (var pawn in pawns)
+        {
+            pawnsAttackBitboard |= BitboardHelper.GetPawnAttacks(pawn.Square, isWhite);
+        }
+
+        //BitboardHelper.VisualizeBitboard(pawnsAttackBitboard);
+
+        foreach (var knight in knights) 
+        {
+            BitboardHelper.SetSquare(ref knightsSquareBitboard, knight.Square);
+        }
+        //BitboardHelper.VisualizeBitboard(knightsSquareBitboard);
+
+        var knightSupportedBitboard = knightsSquareBitboard & pawnsAttackBitboard;
+        //BitboardHelper.VisualizeBitboard(knightSupportedBitboard);
+
+        return CustomBitboardHelper.CountBits(knightSupportedBitboard);
+    }
+
+    #endregion
 }
