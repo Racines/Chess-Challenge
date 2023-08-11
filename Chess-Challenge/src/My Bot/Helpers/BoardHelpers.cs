@@ -261,34 +261,6 @@ public static class BoardHelpers
     #endregion
 
 
-    #region Bishopmob
-
-    /// <summary>
-    /// Bishopmob is the number of squares that a bishop can go to. This type of parameters are calculated
-    /// seperately for each bishop
-    /// </summary>
-    /// <param name="board"></param>
-    /// <returns></returns>
-    public static int Bishopmob(this Board board)
-    {
-        return Bishopmob(board, true) - Bishopmob(board, false);
-    }
-
-    public static int Bishopmob(this Board board, bool isWhite)
-    {
-        PieceList piecesList = board.GetPieceList(PieceType.Bishop, isWhite);
-        var bishopAttackBitboard = TeamAttackedBitboard(board, piecesList);
-        var opponentAttackedBitboard = TeamAttackedBitboard(board, !isWhite);
-        var bishopAttacks = bishopAttackBitboard & ~opponentAttackedBitboard;
-
-        //BitboardHelper.VisualizeBitboard(bishopAttacks);
-
-        return BitboardHelper.GetNumberOfSetBits(bishopAttacks);
-    }
-
-    #endregion
-
-
     #region Bishoponlarge
 
     private static ulong s_BishoponlargeBitboard;
@@ -362,38 +334,6 @@ public static class BoardHelpers
         var hasBishopPair = bishops.Count >= 2;
 
         return hasBishopPair ? 1 : 0;
-    }
-
-    #endregion
-
-
-    #region Knightmob
-
-    /// <summary>
-    /// Knightmob is the number of squares that a specific knight can go to.
-    /// </summary>
-    /// <param name="board"></param>
-    /// <returns></returns>
-    public static int Knightmob(this Board board)
-    { 
-        return Knightmob(board, true) - Knightmob(board, false);
-    }
-
-    public static int Knightmob(this Board board, bool isWhite)
-    {
-        ulong possibleKnightMovesBitboard = 0;
-        var piecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
-
-        var knights = board.GetPieceList(PieceType.Knight, isWhite);
-        foreach (var knight in knights)
-        {
-            var knightAttackBitboard = BitboardHelper.GetKnightAttacks(knight.Square);
-            possibleKnightMovesBitboard |= knightAttackBitboard & ~piecesBitboard;
-        }
-
-        //BitboardHelper.VisualizeBitboard(possibleKnightMovesBitboard);
-
-        return BitboardHelper.GetNumberOfSetBits(possibleKnightMovesBitboard);
     }
 
     #endregion
@@ -935,7 +875,27 @@ public static class BoardHelpers
     #endregion
 
 
-    #region Rookmob
+    #region PieceMob
+
+    /// <summary>
+    /// Bishopmob is the number of squares that bishops can go to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Bishopmob(this Board board)
+    {
+        return PieceMob(board, true, PieceType.Bishop) - PieceMob(board, false, PieceType.Bishop);
+    }
+
+    /// <summary>
+    /// Knightmob is the number of squares that knights can go to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Knightmob(this Board board)
+    {
+        return PieceMob(board, true, PieceType.Knight) - PieceMob(board, false, PieceType.Knight);
+    }
 
     /// <summary>
     /// Rookmob returns the number of squares rooks can move to.
@@ -948,13 +908,23 @@ public static class BoardHelpers
     }
 
     /// <summary>
-    /// Queenmob returns the number of squares a queen can move to.
+    /// Queenmob returns the number of squares queens can move to.
     /// </summary>
     /// <param name="board"></param>
     /// <returns></returns>
     public static int Queenmob(this Board board)
     {
         return PieceMob(board, true, PieceType.Queen) - PieceMob(board, false, PieceType.Queen);
+    }
+
+    /// <summary>
+    /// Kingmob returns the number of squares the king can move to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Kingmob(this Board board)
+    {
+        return PieceMob(board, true, PieceType.King) - PieceMob(board, false, PieceType.King);
     }
 
     public static int PieceMob(this Board board, bool isWhite, PieceType pieceType)
