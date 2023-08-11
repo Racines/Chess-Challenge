@@ -597,7 +597,17 @@ public static class BoardHelpers
 
     public static int Passpawn(this Board board, bool isWhite)
     {
-        int passPawnCount = 0;
+        List<Piece> passPawns = GetPassPawns(board, isWhite);
+
+        int passPawnCount = passPawns.Count;
+        //Console.WriteLine($"passPawnCount: {passPawnCount}");
+
+        return passPawnCount;
+    }
+
+    private static List<Piece> GetPassPawns(Board board, bool isWhite)
+    {
+        var passPawns = new List<Piece>();
 
         var opponentPawnsFile = new List<int>[8];
         for (int i = 0; i < opponentPawnsFile.Length; i++)
@@ -627,12 +637,51 @@ public static class BoardHelpers
 
             var isPass = !pawnsFileToCheck.Any(x => compare(x, pawn.Square.Rank));
             if (isPass)
-                ++passPawnCount;
+                passPawns.Add(pawn);
         }
 
-        //Console.WriteLine($"passPawnCount: {passPawnCount}");
+        return passPawns;
+    }
 
-        return 0;
+    #endregion
+
+
+    #region Rookbhdpasspawn
+
+    /// <summary>
+    /// Rookbhdpasspawn returns 1 per rook of the same color that is behind the passed pawn. If there is a rook
+    /// behind a passed pawn it is easier to push to pawn forward as it is always protected by the rook and
+    /// rook never gets in the way.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookbhdpasspawn(this Board board)
+    {
+        return Rookbhdpasspawn(board, true) - Rookbhdpasspawn(board, false);
+    }
+
+    public static int Rookbhdpasspawn(this Board board, bool isWhite)
+    {
+        int rookbhdpasspawn = 0;
+
+        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
+        if (rooks.Count > 0)
+        {
+            var passPawns = GetPassPawns(board, isWhite);
+            if (passPawns.Count > 0)
+            {
+                foreach (var pawn in passPawns)
+                {
+                    var isRookbhdpasspawn = rooks.Any(x => x.Square.File == pawn.Square.File);
+                    if (isRookbhdpasspawn)
+                        ++rookbhdpasspawn;
+                }
+            }
+        }
+
+        //Console.WriteLine($"rookbhdpasspawn: {rookbhdpasspawn}");
+
+        return rookbhdpasspawn;
     }
 
     #endregion
