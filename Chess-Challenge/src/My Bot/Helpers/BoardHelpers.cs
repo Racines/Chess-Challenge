@@ -971,4 +971,43 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Rookcon
+
+    /// <summary>
+    /// Rookcon returns 1 if there are no pieces between to rooks of the same color and they are on the
+    /// same file or on the same rank.Connected rooks defend each other to create threats in the opposition
+    /// area because they cannot be captured by queen or king.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookcon(this Board board)
+    {
+        return Rookcon(board, true) - Rookcon(board, false);
+    }
+
+    public static int Rookcon(this Board board, bool isWhite)
+    {
+        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
+        var rooksMovesBitboard = 0ul;
+
+        foreach (var rook in rooks)
+        {
+            rooksMovesBitboard |= BitboardHelper.GetPieceAttacks(PieceType.Rook, rook.Square, board, isWhite);
+        }
+
+        ulong rooksSquareBitboard = board.GetPieceBitboard(PieceType.Rook, isWhite);
+        ulong rooksConBitboard = rooksMovesBitboard & rooksSquareBitboard;
+        var isRookCon = rooksConBitboard != 0;
+
+        BitboardHelper.VisualizeBitboard(rooksConBitboard);
+
+        int rookCon = isRookCon ? 1 : 0;
+        Console.WriteLine($"rookCon: {rookCon}");
+
+        return rookCon;
+    }
+
+    #endregion
 }
