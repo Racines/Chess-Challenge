@@ -961,11 +961,11 @@ public static class BoardHelpers
         var playerPiecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
         rooksMovesBitboard &= ~playerPiecesBitboard;
 
-        BitboardHelper.VisualizeBitboard(rooksMovesBitboard);
+        //BitboardHelper.VisualizeBitboard(rooksMovesBitboard);
 
         int rookMob = BitboardHelper.GetNumberOfSetBits(rooksMovesBitboard);
 
-        Console.WriteLine($"rookMob: {rookMob}");
+        //Console.WriteLine($"rookMob: {rookMob}");
 
         return rookMob;
     }
