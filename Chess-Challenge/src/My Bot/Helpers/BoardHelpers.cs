@@ -1,5 +1,6 @@
 ﻿using ChessChallenge.API;
 using System;
+using System.Linq;
 
 public static class BoardHelpers
 {
@@ -542,6 +543,38 @@ public static class BoardHelpers
         //Console.WriteLine($"isoPawnCount: {isoPawnCount}");
 
         return 0;
+    }
+
+    #endregion
+
+
+    #region Doublepawn
+
+    /// <summary>
+    /// Doublepawn returns 1 per pawn that is doubled pawn. Doubled pawns are considered a disadvantage as
+    /// they blocked each other and they are vulnerable to attacks
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Doublepawn(this Board board)
+    {
+        return Doublepawn(board, true) - Doublepawn(board, false);
+    }
+
+    public static int Doublepawn(this Board board, bool isWhite) 
+    {
+        var pawnCounterPerFile = new int[8];
+
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+        foreach (var pawn in pawns)
+        {
+            ++pawnCounterPerFile[pawn.Square.File];
+        }
+
+        var doublePawn = pawnCounterPerFile.Count(x => x > 1);
+        //Console.WriteLine($"doublePawn: {doublePawn}");
+
+        return doublePawn;
     }
 
     #endregion
