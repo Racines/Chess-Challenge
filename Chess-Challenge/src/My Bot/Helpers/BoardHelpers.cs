@@ -1,5 +1,6 @@
 ﻿using ChessChallenge.API;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public static class BoardHelpers
@@ -575,6 +576,63 @@ public static class BoardHelpers
         //Console.WriteLine($"doublePawn: {doublePawn}");
 
         return doublePawn;
+    }
+
+    #endregion
+
+
+    #region Passpawn
+
+    /// <summary>
+    /// Passpawn returns 1 per pawn there are no opposing pawns of the enemy on the neighboring
+    /// columns and on the given pawn’s column ahead of the pawn.If a pawn is passed it is big threat for
+    /// the opponent because the are no pawns on the way to prevent it from promoting.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Passpawn(this Board board)
+    {
+        return Passpawn(board, true) - Passpawn(board, false);
+    }
+
+    public static int Passpawn(this Board board, bool isWhite)
+    {
+        int passPawnCount = 0;
+
+        var opponentPawnsFile = new List<int>[8];
+        for (int i = 0; i < opponentPawnsFile.Length; i++)
+        {
+            opponentPawnsFile[i] = new List<int>();
+        }
+
+        var opponentPawns = board.GetPieceList(PieceType.Pawn, !isWhite);
+        foreach (var pawn in opponentPawns)
+        {
+            opponentPawnsFile[pawn.Square.File].Add(pawn.Square.Rank);
+        }
+
+        Func<int, int, bool> compare = (x, y) => x < y;
+        if (isWhite)
+            compare = (x, y) => x > y;
+
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+        foreach (var pawn in pawns)
+        {
+            // opponent pawns in neighbour files
+            IEnumerable<int> pawnsFileToCheck = opponentPawnsFile[pawn.Square.File];
+            if (pawn.Square.File > 0)
+                pawnsFileToCheck = pawnsFileToCheck.Union(opponentPawnsFile[pawn.Square.File - 1]);
+            if (pawn.Square.File < 7)
+                pawnsFileToCheck = pawnsFileToCheck.Union(opponentPawnsFile[pawn.Square.File + 1]);
+
+            var isPass = !pawnsFileToCheck.Any(x => compare(x, pawn.Square.Rank));
+            if (isPass)
+                ++passPawnCount;
+        }
+
+        //Console.WriteLine($"passPawnCount: {passPawnCount}");
+
+        return 0;
     }
 
     #endregion
