@@ -765,4 +765,46 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Blockedpassedpawn
+
+    /// <summary>
+    /// Blockedpassedpawn returns 1 per passed pawn of Player A that is blocked by a piece of Player B which
+    /// prevents it from moving closer to promotion.This is an advantage for the blocking side.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Blockedpassedpawn(this Board board)
+    {
+        return Blockedpassedpawn(board, true) - Blockedpassedpawn(board, false);
+    }
+
+    public static int Blockedpassedpawn(this Board board, bool isWhite)
+    {
+        int blockedPassedPawns = 0;
+
+        int pawnMoveOffset = isWhite ? 1 : -1;
+
+        var pawns = GetPassPawns(board, isWhite);
+
+        var pawnMoveBitboard = 0ul;
+
+        foreach (var pawn in pawns)
+        {
+            Square square = new Square(pawn.Square.File, pawn.Square.Rank + pawnMoveOffset);
+            BitboardHelper.SetSquare(ref pawnMoveBitboard, square);
+        }
+
+        var opponentPieceBitboard = !isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+        var blockedPawnBitboard = opponentPieceBitboard & pawnMoveBitboard;
+        //BitboardHelper.VisualizeBitboard(blockedPawnBitboard);
+
+        blockedPassedPawns = CustomBitboardHelper.CountBits(blockedPawnBitboard);
+        //Console.WriteLine($"blockedPassedPawns: {blockedPassedPawns}");
+
+        return blockedPassedPawns;
+    }
+
+    #endregion
 }
