@@ -905,4 +905,32 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Rookonseventh
+
+    /// <summary>
+    /// Rookonseventh returns 1 per rook that is on seventh rank from the Players perspective. For white
+    /// that would be the rank 7 for black rank 2. Rooks on seventh rank are dangerous and a classical
+    /// theme in chess for creating major threats at once.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookonseventh(this Board board)
+    {
+        return Rookonseventh(board, true) - Rookonseventh(board, false);
+    }
+
+    public static int Rookonseventh(this Board board, bool isWhite)
+    {
+        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
+        var relativeSeventh = isWhite ? 6 : 1;
+
+        int rookOnSeventh = rooks.Count(x => x.Square.Rank == relativeSeventh);
+        //Console.WriteLine($"rookOnSeventh: {rookOnSeventh}");
+
+        return rookOnSeventh;
+    }
+
+    #endregion
 }
