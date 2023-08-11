@@ -719,4 +719,50 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Blockedpawn
+
+    /// <summary>
+    /// Blockedpawn returns 1 per central pawn on column e or d on its initial square that is blocked by its own
+    /// piece which severely decreases the mobility of the pieces.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Blockedpawn(this Board board)
+    {
+        return Blockedpawn(board, true) - Blockedpawn(board, false);
+    }
+
+    public static int Blockedpawn(this Board board, bool isWhite) 
+    {
+        int blockedPawn = 0;
+
+        var initialRank = isWhite ? 1 : 6;
+        int pawnMoveOffset = isWhite ? 1 : -1;
+
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+        var centralPawnsAtInitialPos = pawns
+            .Where(x => x.Square.File is 3 or 4)
+            .Where(x => x.Square.Rank == initialRank);
+
+        var pawnMoveBitboard = 0ul;
+
+        foreach (var pawn in centralPawnsAtInitialPos)
+        {
+            Square square = new Square(pawn.Square.File, pawn.Square.Rank + pawnMoveOffset);
+            BitboardHelper.SetSquare(ref pawnMoveBitboard, square);
+        }
+
+        var playerPieceBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+        var blockedPawnBitboard = playerPieceBitboard & pawnMoveBitboard;
+        //BitboardHelper.VisualizeBitboard(blockedPawnBitboard);
+
+        blockedPawn = CustomBitboardHelper.CountBits(blockedPawnBitboard);
+        //Console.WriteLine($"blockedPawn: {blockedPawn}");
+
+        return blockedPawn;
+    }
+
+    #endregion
 }
