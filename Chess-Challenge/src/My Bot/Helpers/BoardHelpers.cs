@@ -533,7 +533,7 @@ public static class BoardHelpers
                 continue;
 
             uint shiftedIsoPattern = isoPattern << (i - 1);
-            if(i == 0)
+            if (i == 0)
                 shiftedIsoPattern = isoPattern >> 1;
 
             var isIso = (shiftedIsoPattern & flattenPawnSquareBitboard) == 0;
