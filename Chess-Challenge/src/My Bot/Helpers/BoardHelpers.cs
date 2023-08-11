@@ -944,30 +944,40 @@ public static class BoardHelpers
     /// <returns></returns>
     public static int Rookmob(this Board board)
     {
-        return Rookmob(board, true) - Rookmob(board, false);
+        return PieceMob(board, true, PieceType.Rook) - PieceMob(board, false, PieceType.Rook);
     }
 
-    public static int Rookmob(this Board board, bool isWhite)
+    /// <summary>
+    /// Queenmob returns the number of squares a queen can move to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Queenmob(this Board board)
     {
-        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
-        var rooksMovesBitboard = 0ul;
+        return PieceMob(board, true, PieceType.Queen) - PieceMob(board, false, PieceType.Queen);
+    }
 
-        foreach (var rook in rooks)
+    public static int PieceMob(this Board board, bool isWhite, PieceType pieceType)
+    {
+        var pieces = board.GetPieceList(pieceType, isWhite);
+        var piecesMovesBitboard = 0ul;
+
+        foreach (var piece in pieces)
         {
-            rooksMovesBitboard |= BitboardHelper.GetPieceAttacks(PieceType.Rook, rook.Square, board, isWhite);
+            piecesMovesBitboard |= BitboardHelper.GetPieceAttacks(pieceType, piece.Square, board, isWhite);
         }
 
         // remove defenders moves
         var playerPiecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
-        rooksMovesBitboard &= ~playerPiecesBitboard;
+        piecesMovesBitboard &= ~playerPiecesBitboard;
 
-        //BitboardHelper.VisualizeBitboard(rooksMovesBitboard);
+        BitboardHelper.VisualizeBitboard(piecesMovesBitboard);
 
-        int rookMob = BitboardHelper.GetNumberOfSetBits(rooksMovesBitboard);
+        int pieceMob = BitboardHelper.GetNumberOfSetBits(piecesMovesBitboard);
 
-        //Console.WriteLine($"rookMob: {rookMob}");
+        Console.WriteLine($"pieceMob({pieceType}): {pieceMob}");
 
-        return rookMob;
+        return pieceMob;
     }
 
     #endregion
