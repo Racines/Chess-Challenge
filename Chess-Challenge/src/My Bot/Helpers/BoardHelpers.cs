@@ -811,6 +811,13 @@ public static class BoardHelpers
 
     #region Rookopenfile
 
+    public enum EFileType
+    {
+        Open,
+        SemiOpen,
+        Closed,
+    }
+
     /// <summary>
     /// Rookopenfile returns 1 per given rook that is on a file with no pawns from either side. Rooks are stronger
     /// on open columns because they can move freely.
@@ -819,9 +826,8 @@ public static class BoardHelpers
     /// <returns></returns>
     public static int Rookopenfile(this Board board)
     {
-        return Rookopenfile(board, true) - Rookbhdpasspawn(board, false);
+        return Rookfile(board, true, EFileType.Open) - Rookfile(board, false, EFileType.Open);
     }
-
 
     /// <summary>
     /// Rooksemiopenfile returns 1 per given rook that is on a file with no pawns from its own side. Rooks are
@@ -831,12 +837,24 @@ public static class BoardHelpers
     /// <returns></returns>
     public static int Rooksemiopenfile(this Board board)
     {
-        return Rookopenfile(board, true, true) - Rookopenfile(board, false, true);
+        return Rookfile(board, true, EFileType.SemiOpen) - Rookfile(board, false, EFileType.SemiOpen);
     }
 
-    public static int Rookopenfile(this Board board, bool isWhite, bool semiOpen = false)
+    /// <summary>
+    /// Rookclosedfile returns 1 per rook that is on a file with pawns from both sides. Rooks on closed
+    /// files are considered a disadvantage as they have lower file mobility and no access to the important
+    /// squares of the game especially in the middlegame and endgame.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookclosedfile(this Board board)
     {
-        int rookOpenFile = 0;
+        return Rookfile(board, true, EFileType.Closed) - Rookfile(board, false, EFileType.Closed);
+    }
+
+    public static int Rookfile(this Board board, bool isWhite, EFileType fileType)
+    {
+        int rookFileType = 0;
 
         var rooks = board.GetPieceList(PieceType.Rook, isWhite);
         if (rooks.Count > 0)
@@ -844,26 +862,46 @@ public static class BoardHelpers
             var playerPawns = board.GetPieceList(PieceType.Pawn, isWhite);
             var opponentPawns = board.GetPieceList(PieceType.Pawn, !isWhite);
             IEnumerable<Piece> pawns = playerPawns;
-            if (!semiOpen)
+            if (fileType != EFileType.SemiOpen)
                 pawns = playerPawns.Union(opponentPawns);
 
-            var hasPawnOnFile = new bool[8];
+            var hasPlayerPawnOnFile = new bool[8];
+            var hasOpponentPawnOnFile = new bool[8];
             foreach (var pawn in pawns)
             {
-                hasPawnOnFile[pawn.Square.File] = true;
+                if (isWhite == pawn.IsWhite)
+                    hasPlayerPawnOnFile[pawn.Square.File] = true;
+                else
+                    hasOpponentPawnOnFile[pawn.Square.File] = true;
             }
 
             foreach (var rook in rooks)
             {
-                bool isOpenFile = !hasPawnOnFile[rook.Square.File];
-                if (isOpenFile)
-                    ++rookOpenFile;
+                bool isFileType = !hasPlayerPawnOnFile[rook.Square.File];
+                switch (fileType)
+                {
+                    case EFileType.Open:
+                    default:
+                        isFileType = !hasPlayerPawnOnFile[rook.Square.File] &&
+                                     !hasOpponentPawnOnFile[rook.Square.File];
+                        break;
+                    case EFileType.SemiOpen:
+                        isFileType = !hasPlayerPawnOnFile[rook.Square.File];
+                        break;
+                    case EFileType.Closed:
+                        isFileType = hasPlayerPawnOnFile[rook.Square.File] &&
+                                     hasOpponentPawnOnFile[rook.Square.File];
+                        break;
+                }
+
+                if (isFileType)
+                    ++rookFileType;
             }
         }
 
-        //Console.WriteLine($"rookOpenFile: {rookOpenFile}");
+        //Console.WriteLine($"rookFileType: {rookFileType}");
 
-        return rookOpenFile;
+        return rookFileType;
     }
 
     #endregion
