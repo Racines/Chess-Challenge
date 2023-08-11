@@ -128,7 +128,7 @@ public static class BoardHelpers
     {
         var pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, true);
         var pawnAtCenterBitboard = pawnBitboard & s_CenterpawnBitboard;
-        var pawnAtCenterCount = CustomBitboardHelper.CountBits(pawnAtCenterBitboard);
+        var pawnAtCenterCount = BitboardHelper.GetNumberOfSetBits(pawnAtCenterBitboard);
 
         //BitboardHelper.VisualizeBitboard(whitePawnAtCenterBitboard);
 
@@ -156,7 +156,7 @@ public static class BoardHelpers
         var kingAttacksBitboard = BitboardHelper.GetKingAttacks(board.GetKingSquare(isWhite));
         var pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
         var pawnShieldBitboard = kingAttacksBitboard & pawnBitboard;
-        var pawnShieldCount = CustomBitboardHelper.CountBits(pawnShieldBitboard);
+        var pawnShieldCount = BitboardHelper.GetNumberOfSetBits(pawnShieldBitboard);
 
         //BitboardHelper.VisualizeBitboard(pawnShieldBitboard);
 
@@ -283,7 +283,7 @@ public static class BoardHelpers
 
         //BitboardHelper.VisualizeBitboard(bishopAttacks);
 
-        return CustomBitboardHelper.CountBits(bishopAttacks);
+        return BitboardHelper.GetNumberOfSetBits(bishopAttacks);
     }
 
     #endregion
@@ -335,7 +335,7 @@ public static class BoardHelpers
         ulong bishopsOnLargeBitboard = bishopsSquareBitboard & s_BishoponlargeBitboard;
         //BitboardHelper.VisualizeBitboard(bishopsOnLargeBitboard);
 
-        return CustomBitboardHelper.CountBits(bishopsOnLargeBitboard);
+        return BitboardHelper.GetNumberOfSetBits(bishopsOnLargeBitboard);
     }
 
     #endregion
@@ -393,7 +393,7 @@ public static class BoardHelpers
 
         //BitboardHelper.VisualizeBitboard(possibleKnightMovesBitboard);
 
-        return CustomBitboardHelper.CountBits(possibleKnightMovesBitboard);
+        return BitboardHelper.GetNumberOfSetBits(possibleKnightMovesBitboard);
     }
 
     #endregion
@@ -438,7 +438,7 @@ public static class BoardHelpers
         var knightSupportedBitboard = knightsSquareBitboard & pawnsAttackBitboard;
         //BitboardHelper.VisualizeBitboard(knightSupportedBitboard);
 
-        return CustomBitboardHelper.CountBits(knightSupportedBitboard);
+        return BitboardHelper.GetNumberOfSetBits(knightSupportedBitboard);
     }
 
     #endregion
@@ -758,7 +758,7 @@ public static class BoardHelpers
         var blockedPawnBitboard = playerPieceBitboard & pawnMoveBitboard;
         //BitboardHelper.VisualizeBitboard(blockedPawnBitboard);
 
-        blockedPawn = CustomBitboardHelper.CountBits(blockedPawnBitboard);
+        blockedPawn = BitboardHelper.GetNumberOfSetBits(blockedPawnBitboard);
         //Console.WriteLine($"blockedPawn: {blockedPawn}");
 
         return blockedPawn;
@@ -800,7 +800,7 @@ public static class BoardHelpers
         var blockedPawnBitboard = opponentPieceBitboard & pawnMoveBitboard;
         //BitboardHelper.VisualizeBitboard(blockedPawnBitboard);
 
-        blockedPassedPawns = CustomBitboardHelper.CountBits(blockedPawnBitboard);
+        blockedPassedPawns = BitboardHelper.GetNumberOfSetBits(blockedPawnBitboard);
         //Console.WriteLine($"blockedPassedPawns: {blockedPassedPawns}");
 
         return blockedPassedPawns;
