@@ -812,7 +812,7 @@ public static class BoardHelpers
     #region Rookopenfile
 
     /// <summary>
-    /// Rookopenfile returns 1 if a given rook is on a file with no pawns from either side. Rooks are stronger
+    /// Rookopenfile returns 1 per given rook that is on a file with no pawns from either side. Rooks are stronger
     /// on open columns because they can move freely.
     /// </summary>
     /// <param name="board"></param>
@@ -822,16 +822,31 @@ public static class BoardHelpers
         return Rookopenfile(board, true) - Rookbhdpasspawn(board, false);
     }
 
-    public static int Rookopenfile(this Board board, bool isWhite)
+
+    /// <summary>
+    /// Rooksemiopenfile returns 1 per given rook that is on a file with no pawns from its own side. Rooks are
+    /// strong on semi-open files as well.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rooksemiopenfile(this Board board)
+    {
+        return Rookopenfile(board, true, true) - Rookopenfile(board, false, true);
+    }
+
+    public static int Rookopenfile(this Board board, bool isWhite, bool semiOpen = false)
     {
         int rookOpenFile = 0;
 
         var rooks = board.GetPieceList(PieceType.Rook, isWhite);
         if (rooks.Count > 0)
         {
-            var whitePawns = board.GetPieceList(PieceType.Pawn, true);
-            var blackPawns = board.GetPieceList(PieceType.Pawn, false);
-            var pawns = whitePawns.Union(blackPawns);
+            var playerPawns = board.GetPieceList(PieceType.Pawn, isWhite);
+            var opponentPawns = board.GetPieceList(PieceType.Pawn, !isWhite);
+            IEnumerable<Piece> pawns = playerPawns;
+            if (!semiOpen)
+                pawns = playerPawns.Union(opponentPawns);
+
             var hasPawnOnFile = new bool[8];
             foreach (var pawn in pawns)
             {
