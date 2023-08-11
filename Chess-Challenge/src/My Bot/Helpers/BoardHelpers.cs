@@ -685,4 +685,38 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Rankpassedpawn
+
+    /// <summary>
+    /// Rankpassedpawn is the sum of ranks of the passed pawns. A passed pawn on rank 7 which means the pawn
+    /// is one move away from promoting is a lot more dangerous compared to a passed pawn on its
+    /// initial square. Passed pawns with higher ranks have higher priority thus they are an advantage.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rankpassedpawn(this Board board)
+    {
+        return Rankpassedpawn(board, true) - Rankpassedpawn(board, false);
+    }
+
+    public static int Rankpassedpawn(this Board board, bool isWhite) 
+    {
+        int rankPassedpawns = 0;
+
+        var passPawns = GetPassPawns(board, isWhite);
+        foreach (var pawn in passPawns)
+        {
+            if (isWhite)
+                rankPassedpawns += pawn.Square.Rank;
+            else
+                rankPassedpawns += 8 - pawn.Square.Rank;
+        }
+        //Console.WriteLine($"rankPassedpawns: {rankPassedpawns}");
+
+        return rankPassedpawns;
+    }
+
+    #endregion
 }
