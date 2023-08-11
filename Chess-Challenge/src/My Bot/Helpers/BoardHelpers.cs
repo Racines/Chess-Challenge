@@ -807,4 +807,49 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Rookopenfile
+
+    /// <summary>
+    /// Rookopenfile returns 1 if a given rook is on a file with no pawns from either side. Rooks are stronger
+    /// on open columns because they can move freely.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookopenfile(this Board board)
+    {
+        return Rookopenfile(board, true) - Rookbhdpasspawn(board, false);
+    }
+
+    public static int Rookopenfile(this Board board, bool isWhite)
+    {
+        int rookOpenFile = 0;
+
+        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
+        if (rooks.Count > 0)
+        {
+            var whitePawns = board.GetPieceList(PieceType.Pawn, true);
+            var blackPawns = board.GetPieceList(PieceType.Pawn, false);
+            var pawns = whitePawns.Union(blackPawns);
+            var hasPawnOnFile = new bool[8];
+            foreach (var pawn in pawns)
+            {
+                hasPawnOnFile[pawn.Square.File] = true;
+            }
+
+            foreach (var rook in rooks)
+            {
+                bool isOpenFile = !hasPawnOnFile[rook.Square.File];
+                if (isOpenFile)
+                    ++rookOpenFile;
+            }
+        }
+
+        //Console.WriteLine($"rookOpenFile: {rookOpenFile}");
+
+        return rookOpenFile;
+    }
+
+    #endregion
 }
