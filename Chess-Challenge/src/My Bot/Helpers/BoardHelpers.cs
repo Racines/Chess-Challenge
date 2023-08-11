@@ -971,11 +971,11 @@ public static class BoardHelpers
         var playerPiecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
         piecesMovesBitboard &= ~playerPiecesBitboard;
 
-        BitboardHelper.VisualizeBitboard(piecesMovesBitboard);
+        //BitboardHelper.VisualizeBitboard(piecesMovesBitboard);
 
         int pieceMob = BitboardHelper.GetNumberOfSetBits(piecesMovesBitboard);
 
-        Console.WriteLine($"pieceMob({pieceType}): {pieceMob}");
+        //Console.WriteLine($"pieceMob({pieceType}): {pieceMob}");
 
         return pieceMob;
     }
