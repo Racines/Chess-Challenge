@@ -933,4 +933,42 @@ public static class BoardHelpers
     }
 
     #endregion
+
+
+    #region Rookmob
+
+    /// <summary>
+    /// Rookmob returns the number of squares rooks can move to.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Rookmob(this Board board)
+    {
+        return Rookmob(board, true) - Rookmob(board, false);
+    }
+
+    public static int Rookmob(this Board board, bool isWhite)
+    {
+        var rooks = board.GetPieceList(PieceType.Rook, isWhite);
+        var rooksMovesBitboard = 0ul;
+
+        foreach (var rook in rooks)
+        {
+            rooksMovesBitboard |= BitboardHelper.GetPieceAttacks(PieceType.Rook, rook.Square, board, isWhite);
+        }
+
+        // remove defenders moves
+        var playerPiecesBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+        rooksMovesBitboard &= ~playerPiecesBitboard;
+
+        BitboardHelper.VisualizeBitboard(rooksMovesBitboard);
+
+        int rookMob = BitboardHelper.GetNumberOfSetBits(rooksMovesBitboard);
+
+        Console.WriteLine($"rookMob: {rookMob}");
+
+        return rookMob;
+    }
+
+    #endregion
 }
