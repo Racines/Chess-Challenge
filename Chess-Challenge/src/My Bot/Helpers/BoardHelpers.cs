@@ -135,6 +135,17 @@ public static class BoardHelpers
 
     public static int Weakcount(this Board board, bool isWhite)
     {
+        ulong weakSquareBitboard = GetWeakSquareBitboard(board, isWhite);
+        //BitboardHelper.VisualizeBitboard(weakSquareBitboard);
+
+        int weakCount = BitboardHelper.GetNumberOfSetBits(weakSquareBitboard);
+        //Console.WriteLine($"weakCount: {weakCount}");
+
+        return weakCount;
+    }
+
+    private static ulong GetWeakSquareBitboard(Board board, bool isWhite)
+    {
         var pawnsAttackBitboard = 0ul;
 
         var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
@@ -146,12 +157,37 @@ public static class BoardHelpers
         var occupiedSquareBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
         var teamArea = isWhite ? m_WhiteWeakArea : m_BlackWeakArea;
         var weakSquareBitboard = teamArea & ~(pawnsAttackBitboard | occupiedSquareBitboard);
-        BitboardHelper.VisualizeBitboard(weakSquareBitboard);
+        return weakSquareBitboard;
+    }
 
-        int weakCount = BitboardHelper.GetNumberOfSetBits(weakSquareBitboard);
-        Console.WriteLine($"weakCount: {weakCount}");
+    #endregion
 
-        return weakCount;
+
+    #region Enemyknightonweak
+
+    /// <summary>
+    /// Enemyknightonweak is the number of knights of Player B that are in the weak squares of Player A.
+    /// These weak squares are called outposts and best squares for knights because they can not be pushed
+    /// back by enemy pawns.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Enemyknightonweak(this Board board)
+    {
+        return Enemyknightonweak(board, true) - Enemyknightonweak(board, false);
+    }
+
+    public static int Enemyknightonweak(this Board board, bool isWhite)
+    {
+        var weakSquareBitboard = GetWeakSquareBitboard(board, isWhite);
+        var opponentKnightBitboard = board.GetPieceBitboard(PieceType.Knight, !isWhite);
+        var enemyKnightOnWeakBitboard = weakSquareBitboard & opponentKnightBitboard;
+        //BitboardHelper.VisualizeBitboard(enemyKnightOnWeakBitboard);
+
+        int enemyKnightOnWeak = BitboardHelper.GetNumberOfSetBits(enemyKnightOnWeakBitboard);
+        //Console.WriteLine($"enemyKnightOnWeak: {enemyKnightOnWeak}");
+
+        return enemyKnightOnWeak;
     }
 
     #endregion
