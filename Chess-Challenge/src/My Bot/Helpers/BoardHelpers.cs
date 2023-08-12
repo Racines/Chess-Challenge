@@ -169,7 +169,7 @@ public static class BoardHelpers
     #region Kingattacked
 
     /// <summary>
-    /// Kingdefended is the material value of the pieces of the Player A that are acting on Player A’s king’s
+    /// Kingattacked is the material value of the pieces of the Player A that are acting on Player A’s king’s
     /// adjacent squares.
     /// </summary>
     /// <param name="board"></param>
