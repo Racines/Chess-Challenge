@@ -355,6 +355,30 @@ public static class BoardHelpers
     #endregion
 
 
+    #region Kingcastled
+
+    /// <summary>
+    /// Kingcastled returns 1 if Player A is castled to measure king safety.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Kingcastled(this Board board)
+    {
+        return Kingcastled(board, true) - Kingcastled(board, false);
+    }
+
+    public static int Kingcastled(this Board board, bool isWhite)
+    {
+        // using HasCastled is not official, I hope the pull request will be accepted https://github.com/SebLague/Chess-Challenge/pull/449/
+        int kingCastled = board.HasCastled(isWhite) ? 1 : 0;
+        //Console.WriteLine($"kingCastled: {kingCastled}");
+
+        return kingCastled;
+    }
+
+    #endregion
+
+
     #region Bishoponlarge
 
     private static ulong s_BishoponlargeBitboard;
