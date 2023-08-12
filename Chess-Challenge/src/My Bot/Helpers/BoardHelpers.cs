@@ -42,6 +42,11 @@ public static class BoardHelpers
         if (node.IsDraw())
             return 0;
 
+        return PiecesValue(node, pieceValues);
+    }
+
+    public static int PiecesValue(this Board node, int[] pieceValues)
+    {
         // Compute heuristic value based on the score of each team
         int heuristicValue = 0;
         var teamsPieces = node.GetAllPieceLists();

@@ -58,8 +58,16 @@ namespace Evaluator
 
         public override int Evaluate(Board board)
         {
-            var value = board.HeuristicValue(m_PieceValues);
+            // Heuristic value for checkmate 
+            if (board.IsInCheckmate())
+                return board.IsWhiteToMove ? int.MinValue : int.MaxValue;
 
+            // Heuristic value for draw 
+            if (board.IsDraw())
+                return 0;
+
+            // Try to evaluate board position
+            var value = board.PiecesValue(m_PieceValues);
             value += m_Weights.Weakcount * board.Weakcount();
             value += m_Weights.Enemyknightonweak * board.Enemyknightonweak();
             value += m_Weights.Centerpawncount * board.Centerpawncount();
