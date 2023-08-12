@@ -29,6 +29,11 @@ public static class BoardHelpers
 
     public static int HeuristicValue(this Board node)
     {
+        return HeuristicValue(node, s_PieceValues);
+    }
+
+    public static int HeuristicValue(this Board node, int[] pieceValues)
+    {
         // Heuristic value for checkmate 
         if (node.IsInCheckmate())
             return node.IsWhiteToMove ? int.MinValue : int.MaxValue;
@@ -43,7 +48,7 @@ public static class BoardHelpers
         foreach (var teamPieces in teamsPieces)
         {
             // Compute score for the team
-            int teamScore = teamPieces.TypeOfPieceInList.Value() * teamPieces.Count;
+            int teamScore = teamPieces.TypeOfPieceInList.Value(pieceValues) * teamPieces.Count;
 
             // add or substract team score depending of isWhite value
             if (teamPieces.IsWhitePieceList)
@@ -59,8 +64,17 @@ public static class BoardHelpers
     {
         return piece.PieceType.Value();
     }
+    public static int Value(this Piece piece, int[] pieceValues)
+    {
+        return piece.PieceType.Value(pieceValues);
+    }
 
     public static int Value(this PieceType pieceType)
+    {
+        return Value(pieceType, s_PieceValues);
+    }
+
+    public static int Value(this PieceType pieceType, int[] pieceValues)
     {
         return s_PieceValues[(int)pieceType];
     }
