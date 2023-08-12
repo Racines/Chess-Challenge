@@ -576,10 +576,12 @@ public static class BoardHelpers
 
         uint flattenPawnSquareBitboard = 0;
 
+        var pawnsPerFile = new int[8];
         var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
         foreach (var pawn in pawns)
         {
             flattenPawnSquareBitboard |= 1u << pawn.Square.File;
+            ++pawnsPerFile[pawn.Square.File];
         }
         //Console.WriteLine($"flattenPawnSquareBitboard: {Convert.ToString(flattenPawnSquareBitboard, 2)}");
 
@@ -596,7 +598,7 @@ public static class BoardHelpers
 
             var isIso = (shiftedIsoPattern & flattenPawnSquareBitboard) == 0;
             if (isIso)
-                ++isoPawnCount;
+                isoPawnCount += pawnsPerFile[i];
         }
 
         //Console.WriteLine($"isoPawnCount: {isoPawnCount}");
