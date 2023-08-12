@@ -1,4 +1,4 @@
-﻿using Chess_Challenge.src.My_Bot.Evaluator;
+﻿using Evaluator;
 using ChessChallenge.API;
 using System;
 

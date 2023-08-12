@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chess_Challenge.src.My_Bot.Evaluator
+namespace Evaluator
 {
     public class BasicBoardEvaluator : BoardEvaluator
     {
