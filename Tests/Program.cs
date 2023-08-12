@@ -23,14 +23,11 @@ var bot = new AlphaBeta4BrainBot();
 //var bot = new AlphaBeta4NotSmartBrainBot();
 var bot2 = new AlphaBeta4NoTranspositionBrainBot();
 
-CompareBots<AlphaBeta4NotSmartBrainBot, AlphaBeta4NoTranspositionBrainBot>(20);
+CompareBots<AlphaBeta4BrainBot, AlphaBeta4NoTranspositionBrainBot>(20);
 //CompareBots<MiniMax3BrainBot, AlphaBeta3NoTranspositionBrainBot>(10);
 return;
 
-AlphaBetaBrainBot.m_LeafNodes = new();
 EvaluateLegalMoves(board, timer, bot);
-File.WriteAllLines("Bot1_Leaft.txt", AlphaBetaBrainBot.m_LeafNodes.ToArray());
-
 
 Console.WriteLine();
 Console.WriteLine();
@@ -42,17 +39,7 @@ if (board.GetFenString() != FEN)
     Console.Error.WriteLine("board.GetFenString() != FEN");
 }
 
-
-AlphaBetaBrainBot.m_LeafNodes = new();
 EvaluateLegalMoves(board, timer, bot2);
-File.WriteAllLines("Bot2_Leaft.txt", AlphaBetaBrainBot.m_LeafNodes.ToArray());
-
-
-
-var bot3 = new AlphaBeta4NotSmartBrainBot();
-AlphaBetaBrainBot.m_LeafNodes = new();
-EvaluateLegalMoves(board, timer, bot3);
-File.WriteAllLines("Bot3_Leaft.txt", AlphaBetaBrainBot.m_LeafNodes.ToArray());
 
 ////Think(board, timer, bot);
 ////EvaluateMove(board, "g7g5", timer, bot);
