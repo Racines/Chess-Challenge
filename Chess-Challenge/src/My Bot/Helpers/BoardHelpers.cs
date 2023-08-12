@@ -747,6 +747,49 @@ public static class BoardHelpers
     #endregion
 
 
+    #region Backwardpawn
+
+    /// <summary>
+    /// Backwardpawn returns the number of pawn that check if the neighboring pawns of a pawn are ahead of it. Backward pawns are
+    /// the last pawn of a pawn chain and even though they are not isolated they can not be defended easily.
+    /// So they are considered a disadvantage.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Backwardpawn(this Board board)
+    {
+        return Backwardpawn(board, true) - Backwardpawn(board, false);
+    }
+
+    public static int Backwardpawn(this Board board, bool isWhite)
+    {
+        var pawnsBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
+        var pawnsDefenderBitboard = 0ul;
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+
+        var pawnsAttackBitboard = 0ul;
+        foreach (var pawn in pawns)
+        {
+            ulong pawnAttackBitboard = BitboardHelper.GetPawnAttacks(pawn.Square, isWhite);
+            bool isDefender = (pawnsBitboard & pawnAttackBitboard) != 0;
+            if (isDefender)
+                BitboardHelper.SetSquare(ref pawnsDefenderBitboard, pawn.Square);
+
+            pawnsAttackBitboard |= pawnAttackBitboard;
+        }
+        pawnsDefenderBitboard &= ~pawnsAttackBitboard;
+
+        //BitboardHelper.VisualizeBitboard(pawnsDefenderBitboard);
+
+        int backwardPawn = BitboardHelper.GetNumberOfSetBits(pawnsDefenderBitboard);
+        //Console.WriteLine($"backwardPawn: {backwardPawn}");
+
+        return backwardPawn;
+    }
+
+    #endregion
+
+
     #region Rankpassedpawn
 
     /// <summary>
