@@ -97,7 +97,65 @@ public static class BoardHelpers
     {
         InitCenterpawnBitboard();
         InitBishoponlargeBitboard();
+        InitWeakAreas();
     }
+
+    #region Weakcount
+
+    private static ulong m_WhiteWeakArea;
+    private static ulong m_BlackWeakArea;
+
+    private static void InitWeakAreas()
+    {
+        for (int file = 0; file < 8; file++)
+        {
+            for (int rank = 2; rank < 4; rank++)
+            {
+                BitboardHelper.SetSquare(ref m_WhiteWeakArea, new Square(file, rank));
+            }
+
+            for (int rank = 4; rank < 6; rank++)
+            {
+                BitboardHelper.SetSquare(ref m_BlackWeakArea, new Square(file, rank));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Weakcount is the number of squares in Player A’s area that cannot be protected by Player A’s pawns.
+    /// For White, weak squares can usually be found along the 4th and 3rd ranks, 
+    /// while Black's weak squares are often on the 5th and 6th ranks.
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public static int Weakcount(this Board board)
+    {
+        return Weakcount(board, true) - Weakcount(board, false);
+    }
+
+    public static int Weakcount(this Board board, bool isWhite)
+    {
+        var pawnsAttackBitboard = 0ul;
+
+        var pawns = board.GetPieceList(PieceType.Pawn, isWhite);
+        foreach (var pawn in pawns)
+        {
+            pawnsAttackBitboard |= BitboardHelper.GetPawnAttacks(pawn.Square, isWhite);
+        }
+
+        var occupiedSquareBitboard = isWhite ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+        var teamArea = isWhite ? m_WhiteWeakArea : m_BlackWeakArea;
+        var weakSquareBitboard = teamArea & ~(pawnsAttackBitboard | occupiedSquareBitboard);
+        BitboardHelper.VisualizeBitboard(weakSquareBitboard);
+
+        int weakCount = BitboardHelper.GetNumberOfSetBits(weakSquareBitboard);
+        Console.WriteLine($"weakCount: {weakCount}");
+
+        return weakCount;
+    }
+
+    #endregion
+
 
     #region Centerpawncount
 
