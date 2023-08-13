@@ -12,9 +12,9 @@ namespace Evaluator
     {
         public override int Evaluate(Board board)
         {
-            Console.WriteLine(board);
-
-            return board.Isopawn(true);
+            return 0;
+            //Console.WriteLine(board);
+            //return board.Isopawn(true);
         }
     }
 }
