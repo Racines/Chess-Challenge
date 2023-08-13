@@ -366,7 +366,7 @@ public static class BoardHelpers
             }
         }
 
-        BitboardHelper.VisualizeBitboard(defendedBitboard);
+        //BitboardHelper.VisualizeBitboard(defendedBitboard);
 
         return 0;
     }
@@ -1163,10 +1163,10 @@ public static class BoardHelpers
         ulong rooksConBitboard = rooksMovesBitboard & rooksSquareBitboard;
         var isRookCon = rooksConBitboard != 0;
 
-        BitboardHelper.VisualizeBitboard(rooksConBitboard);
+        //BitboardHelper.VisualizeBitboard(rooksConBitboard);
 
         int rookCon = isRookCon ? 1 : 0;
-        Console.WriteLine($"rookCon: {rookCon}");
+        //Console.WriteLine($"rookCon: {rookCon}");
 
         return rookCon;
     }
