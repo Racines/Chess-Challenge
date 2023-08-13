@@ -4,7 +4,7 @@ using System;
 
 public class GreedyAdvancedEvalBrainBot : BrainBot
 {
-    public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
+    public override int Evaluate(Board node, Timer timer, EvaluationParameters parameters)
     {
         return Evaluators.s_AdvancedEvaluator.Evaluate(node);
     }
@@ -12,8 +12,8 @@ public class GreedyAdvancedEvalBrainBot : BrainBot
 
 public class GreedyBrainBot : BrainBot
 {
-    public override int Evaluate(Board node, Timer timer, Move move, bool isWhite)
+    public override int Evaluate(Board node, Timer timer, EvaluationParameters parameters)
     {
-        return move.CapturePieceType.Value();
+        return parameters.Move.CapturePieceType.Value();
     }
 }

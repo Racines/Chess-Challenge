@@ -4,6 +4,12 @@ using System;
 
 public abstract class BrainBot : IChessBot
 {
+    public struct EvaluationParameters
+    {
+        public Move Move;
+        public bool IsWhite;
+    }
+
     protected DepthTranspositionTable m_TranspositionTable = new ();
     protected bool m_UseTranspositionTable = true;
     protected BoardEvaluator m_BoardEvaluator = new BasicBoardEvaluator();
@@ -65,14 +71,20 @@ public abstract class BrainBot : IChessBot
         else
         {
             // else evaluate the board position
-            score = Evaluate(board, timer, move, isBotWhite);
+            var parameters = new EvaluationParameters() 
+            {
+                Move = move,
+                IsWhite = isBotWhite,
+            };
+
+            score = Evaluate(board, timer, parameters);
         }
 
         board.UndoMove(move);
         return new(move, score);
     }
 
-    public abstract int Evaluate(Board node, Timer timer, Move move, bool isWhite);
+    public abstract int Evaluate(Board node, Timer timer, EvaluationParameters parameters);
 
     protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
     {
