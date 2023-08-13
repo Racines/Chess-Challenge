@@ -54,6 +54,77 @@ EvaluateLegalMoves(board, timer, bot2);
 
 
 
+static void EvaluateBots<T1, T2>(int gameCount = 1)
+    where T1 : IChessBot, new()
+    where T2 : IChessBot, new()
+{
+    int T1Wins = 0;
+    int T2Wins = 0;
+    int gamePlayed = 0;
+
+    var locker = new object();
+
+    var options = new ParallelOptions()
+    {
+        MaxDegreeOfParallelism = 12,
+    };
+
+    Parallel.For(0, gameCount, options, i =>
+    {
+        var T1IsWhite = i % 2 == 0;
+        IChessBot whiteBot = T1IsWhite ? new T1() : new T2();
+        IChessBot blackBot = !T1IsWhite ? new T1() : new T2();
+
+        Console.WriteLine($"[{i}] - Evaluate bots {whiteBot.GetType()} vs {blackBot.GetType()}");
+
+        var board = Board.CreateBoardFromFEN(ChessChallenge.Chess.FenUtility.StartPositionFEN);
+        var timer = new ChessChallenge.API.Timer(int.MaxValue);
+        while (!board.IsTerminal())
+        {
+            var botToPlay = board.IsWhiteToMove ? whiteBot : blackBot;
+            var bestMove = botToPlay.Think(board, timer);
+            board.MakeMove(bestMove);
+        }
+
+        lock (locker)
+        {
+            ++gamePlayed;
+
+            Console.WriteLine($"[{i}] - Game over");
+
+            if (board.IsInCheckmate())
+            {
+                if (!(board.IsWhiteToMove ^ T1IsWhite))
+                    ++T2Wins;
+                else
+                    ++T1Wins;
+
+                PrintScore<T1, T2>(T1Wins, T2Wins, gamePlayed);
+            }
+        }
+    });
+
+    for (int i = 0; i < 10; i++)
+        Console.WriteLine();
+
+    PrintScore<T1, T2>(T1Wins, T2Wins, gamePlayed);
+}
+
+static void PrintScore<T1, T2>(int T1Wins, int T2Wins, int gameCount)
+    where T1 : IChessBot, new()
+    where T2 : IChessBot, new()
+{
+    var draw = gameCount - T1Wins - T2Wins;
+
+    Console.WriteLine();
+    Console.WriteLine($"================== Results [{gameCount.ToString("000")}] ==================");
+    Console.WriteLine($"        {typeof(T1)}: +{T1Wins} ={draw} -{T2Wins}");
+    Console.WriteLine($"        {typeof(T2)}: +{T2Wins} ={draw} -{T1Wins}");
+    Console.WriteLine($"===================================================");
+    Console.WriteLine();
+}
+
+
 static void CompareBots<T1, T2>(int gameCount = 1) 
     where T1 : BrainBot, new()
     where T2 : BrainBot, new()
