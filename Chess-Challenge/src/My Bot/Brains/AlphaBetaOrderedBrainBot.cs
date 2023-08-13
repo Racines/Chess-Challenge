@@ -1,4 +1,5 @@
 ﻿using ChessChallenge.API;
+using System;
 using System.Linq;
 
 public class AlphaBetaOrderedBrainBot : AlphaBetaBrainBot
@@ -6,8 +7,16 @@ public class AlphaBetaOrderedBrainBot : AlphaBetaBrainBot
     const int c_SquareControlledByOpponentPawnPenalty = 350;
     const int c_CapturedPieceValueMultiplier = 10;
 
+    public AlphaBetaOrderedBrainBot(int minDepth, int maxDepth)
+        :base(minDepth, maxDepth)
+    {
+    }
     public AlphaBetaOrderedBrainBot(int maxDepth)
-        :base(maxDepth)
+        : base(maxDepth)
+    {
+    }
+    public AlphaBetaOrderedBrainBot()
+        : base()
     {
     }
 

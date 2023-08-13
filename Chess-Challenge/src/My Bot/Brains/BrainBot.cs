@@ -1,6 +1,10 @@
-﻿using Evaluator;
+﻿//#define debuglog
+
+using Evaluator;
 using ChessChallenge.API;
 using System;
+using System.Diagnostics;
+
 
 public abstract class BrainBot : IChessBot
 {
@@ -8,12 +12,15 @@ public abstract class BrainBot : IChessBot
     {
         public Move Move;
         public bool IsWhite;
+        public int Depth;
     }
 
     protected DepthTranspositionTable m_TranspositionTable = new ();
     protected bool m_UseTranspositionTable = true;
     protected BoardEvaluator m_BoardEvaluator = new BasicBoardEvaluator();
     protected BoardEvaluator m_DebugBoardEvaluator = new DebugBoardEvaluator();
+    protected int m_MinDepth = 1;
+    protected int m_MaxDepth = 100;
 
 
     public bool UseTranspositionTable { get => m_UseTranspositionTable; set => m_UseTranspositionTable = value; }
@@ -31,20 +38,54 @@ public abstract class BrainBot : IChessBot
     public ScoredMoves EvaluateLegalMoves(Board board, Timer timer, bool breakAtCheckMate = true)
     {
         Move[] allMoves = board.GetLegalMoves();
+
+        // compute time allowed for this turn
+        const int averageTurnInAGame = 80;
+        const int minTurnLeft = 20;
+        var moveUntilEnd = Math.Max(minTurnLeft, averageTurnInAGame - board.PlyCount);
+        var turnTimeAllowed = timer.MillisecondsRemaining / moveUntilEnd;
+
+        // Compute default min depth that should be computable in given time
+        const int timeToComputeDepth3 = 100;
+        const int baseDepthComputation = 3;
+        const int averageLegalMove = 30;
+        const int depthComplexity = 5;
+        var baseTime = (timeToComputeDepth3 * allMoves.Length) / (double)averageLegalMove;
+        var minDepth = (int)(Math.Log(turnTimeAllowed / baseTime, depthComplexity) + baseDepthComputation);
+
+        minDepth = Math.Clamp(minDepth, m_MinDepth, m_MaxDepth);
+
+        var p = new EvaluationParameters()
+        {
+            IsWhite = board.IsWhiteToMove,
+            Depth = minDepth,
+        };
+
+        MyBotLogLine($"====== Move {board.PlyCount} - allowed time: {turnTimeAllowed}");
+        MyBotLogLine($"legal move: {allMoves.Length}");
+
+        var orderedMoves = OrderMoves(board, allMoves);
         var scoredMoves = new ScoredMoves();
 
-        bool isBotWhite = board.IsWhiteToMove;
-
-        // optionnal order
-        var orderedMoves = OrderMoves(board, allMoves);
-
-        foreach (Move move in orderedMoves)
+        do
         {
-            var scoredMove = EvaluateMove(board, timer, move, isBotWhite, out var isInCheckmate);
-            scoredMoves.Add(scoredMove);
-            if (isInCheckmate && breakAtCheckMate)
+            foreach (Move move in orderedMoves)
+            {
+                p.Move = move;
+                var scoredMove = EvaluateMove(board, timer, p, out var isInCheckmate);
+                scoredMoves.Add(scoredMove);
+                if (isInCheckmate && breakAtCheckMate)
+                    goto doubleBreak;
+            }
+
+            MyBotLogLine($"evaluated depth {p.Depth} in {timer.MillisecondsElapsedThisTurn} / {turnTimeAllowed}");
+
+            if (++p.Depth > m_MaxDepth)
                 break;
         }
+        while (timer.MillisecondsElapsedThisTurn * 5 < turnTimeAllowed);
+
+        doubleBreak:
 
         m_TranspositionTable.Clear();
 
@@ -53,12 +94,18 @@ public abstract class BrainBot : IChessBot
 
     public ScoredMove EvaluateMove(Board board, Timer timer, Move move)
     {
-        return EvaluateMove(board, timer, move, board.IsWhiteToMove, out _);
+        var p = new EvaluationParameters()
+        {
+            Move = move,
+            IsWhite = board.IsWhiteToMove,
+        };
+
+        return EvaluateMove(board, timer, p, out _);
     }
 
-    public ScoredMove EvaluateMove(Board board, Timer timer, Move move, bool isBotWhite, out bool isInCheckmate)
+    public ScoredMove EvaluateMove(Board board, Timer timer, EvaluationParameters parameters, out bool isInCheckmate)
     {
-        board.MakeMove(move);
+        board.MakeMove(parameters.Move);
 
         int score = int.MinValue;
         isInCheckmate = board.IsInCheckmate();
@@ -71,17 +118,11 @@ public abstract class BrainBot : IChessBot
         else
         {
             // else evaluate the board position
-            var parameters = new EvaluationParameters() 
-            {
-                Move = move,
-                IsWhite = isBotWhite,
-            };
-
             score = Evaluate(board, timer, parameters);
         }
 
-        board.UndoMove(move);
-        return new(move, score);
+        board.UndoMove(parameters.Move);
+        return new(parameters.Move, score);
     }
 
     public abstract int Evaluate(Board node, Timer timer, EvaluationParameters parameters);
@@ -90,4 +131,24 @@ public abstract class BrainBot : IChessBot
     {
         return allMoves;
     }
+
+
+    #region Helpers
+
+    [Conditional("debuglog")]
+    public static void LogLine(string line)
+    {
+        Console.WriteLine(line);
+    }
+
+    [Conditional("debuglog")]
+    public void MyBotLogLine(string line)
+    {
+        if (this is not MyBot)
+            return;
+
+        LogLine(line);
+    }
+
+    #endregion
 }

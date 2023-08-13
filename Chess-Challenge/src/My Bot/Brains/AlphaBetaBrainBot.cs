@@ -77,6 +77,14 @@ public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
+public class AlphaBeta100BrainBot : AlphaBetaOrderedBrainBot
+{
+    public AlphaBeta100BrainBot()
+        : base(100)
+    {
+    }
+}
+
 public class AlphaBeta5NoTranspositionBrainBot : AlphaBeta5BrainBot
 {
     public AlphaBeta5NoTranspositionBrainBot()
@@ -86,17 +94,27 @@ public class AlphaBeta5NoTranspositionBrainBot : AlphaBeta5BrainBot
     }
 }
 
-public class AlphaBetaBrainBot : DepthBrainBot
+public class AlphaBetaBrainBot : BrainBot
 {
-    public AlphaBetaBrainBot(int maxDepth)
-        :base(maxDepth) 
+    public AlphaBetaBrainBot()
     {
+    }
+
+    public AlphaBetaBrainBot(int maxDepth)
+    {
+        m_MaxDepth = maxDepth;
+    }
+
+    public AlphaBetaBrainBot(int minDepth, int maxDepth)
+    {
+        m_MaxDepth = maxDepth;
+        m_MinDepth = minDepth;
     }
 
     public override int Evaluate(Board node, Timer timer, EvaluationParameters parameters)
     {
         m_TranspositionTable.Clear();
-        return AlphaBeta(node, m_MaxDepth, int.MinValue, int.MaxValue);
+        return AlphaBeta(node, parameters.Depth, int.MinValue, int.MaxValue);
     }
 
     public int AlphaBeta(Board node, int depth, int alpha, int beta)
