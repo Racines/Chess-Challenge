@@ -1,5 +1,6 @@
 ﻿using ChessChallenge.API;
 using System;
+using System.Text.Json;
 
 namespace Evaluator
 {
@@ -43,6 +44,13 @@ namespace Evaluator
         public int Rookmob;
         public int Rookcon;
         public int Queenmob;
+
+        public static BoardEvaluatorWeights Deserialize(string path)
+        {
+            var options = new JsonSerializerOptions { IncludeFields = true, };
+            var json = System.IO.File.ReadAllText(path);
+            return JsonSerializer.Deserialize<BoardEvaluatorWeights>(json, options)!;
+        }
     }
 
     public class AdvancedBoardEvaluator : BoardEvaluator
@@ -55,6 +63,8 @@ namespace Evaluator
             m_Weights = w;
             m_PieceValues = new int [] { 0, w.Pawn, w.Knight, w.Bishop, w.Rook, w.Queen, 10000 };
         }
+
+        public BoardEvaluatorWeights Weights => m_Weights;
 
         public override int Evaluate(Board board)
         {
