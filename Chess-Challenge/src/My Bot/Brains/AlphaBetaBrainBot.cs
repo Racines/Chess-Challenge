@@ -18,11 +18,29 @@ public class AlphaBeta2BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
+public class AlphaBeta2AdvancedEvalBrainBot : AlphaBetaOrderedBrainBot
+{
+    public AlphaBeta2AdvancedEvalBrainBot()
+        : base(2)
+    {
+        m_BoardEvaluator = Evaluators.s_AdvancedEvaluator;
+    }
+}
+
 public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
 {
     public AlphaBeta3BrainBot()
         : base(3)
     {
+    }
+}
+
+public class AlphaBeta3AdvancedEvalBrainBot : AlphaBetaOrderedBrainBot
+{
+    public AlphaBeta3AdvancedEvalBrainBot()
+        : base(3)
+    {
+        m_BoardEvaluator = Evaluators.s_AdvancedEvaluator;
     }
 }
 
