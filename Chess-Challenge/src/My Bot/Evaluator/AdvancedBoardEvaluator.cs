@@ -78,39 +78,55 @@ namespace Evaluator
 
             // Try to evaluate board position
             var value = board.PiecesValue(m_PieceValues);
-            value += m_Weights.Weakcount * board.Weakcount();
-            value += m_Weights.Enemyknightonweak * board.Enemyknightonweak();
-            value += m_Weights.Centerpawncount * board.Centerpawncount();
-            value += m_Weights.Kingpawnshield * board.Kingpawnshield();
-            value += m_Weights.Kingattacked * board.Kingattacked();
-            value += m_Weights.Kingdefended * board.Kingdefended();
-            value += m_Weights.Kingcastled * board.Kingcastled();
-            value += m_Weights.Bishopmob * board.Bishopmob();
-            value += m_Weights.Bishoponlarge * board.Bishoponlarge();
-            value += m_Weights.Bishoppair * board.Bishoppair();
-            value += m_Weights.Knightmob * board.Knightmob();
-            value += m_Weights.Knightsupport * board.Knightsupport();
-            value += m_Weights.Knightperiphery0 * board.Knightperiphery(0);
-            value += m_Weights.Knightperiphery1 * board.Knightperiphery(1);
-            value += m_Weights.Knightperiphery2 * board.Knightperiphery(2);
-            value += m_Weights.Knightperiphery3 * board.Knightperiphery(3);
-            value += m_Weights.Isopawn * board.Isopawn();
-            value += m_Weights.Doublepawn * board.Doublepawn();
-            value += m_Weights.Passpawn * board.Passpawn();
-            value += m_Weights.Rookbhdpasspawn * board.Rookbhdpasspawn();
-            value += m_Weights.Backwardpawn * board.Backwardpawn();
-            value += m_Weights.Rankpassedpawn * board.Rankpassedpawn();
-            value += m_Weights.Blockedpawn * board.Blockedpawn();
-            value += m_Weights.Blockedpassedpawn * board.Blockedpassedpawn();
-            value += m_Weights.Rookopenfile * board.Rookopenfile();
-            value += m_Weights.Rooksemiopenfile * board.Rooksemiopenfile();
-            value += m_Weights.Rookclosedfile * board.Rookclosedfile();
-            value += m_Weights.Rookonseventh * board.Rookonseventh();
-            value += m_Weights.Rookmob * board.Rookmob();
-            value += m_Weights.Rookcon * board.Rookcon();
-            value += m_Weights.Queenmob * board.Queenmob();
+            value += SmartWeight(board, m_Weights.Weakcount, BoardHelpers.Weakcount);
+            value += SmartWeight(board, m_Weights.Centerpawncount, BoardHelpers.Centerpawncount);
+            value += SmartWeight(board, m_Weights.Kingpawnshield, BoardHelpers.Kingpawnshield);
+            value += SmartWeight(board, m_Weights.Kingattacked, BoardHelpers.Kingattacked);
+            value += SmartWeight(board, m_Weights.Kingdefended, BoardHelpers.Kingdefended);
+            value += SmartWeight(board, m_Weights.Kingcastled, BoardHelpers.Kingcastled);
+            value += SmartWeight(board, m_Weights.Bishopmob, BoardHelpers.Bishopmob);
+            value += SmartWeight(board, m_Weights.Bishoponlarge, BoardHelpers.Bishoponlarge);
+            value += SmartWeight(board, m_Weights.Bishoppair, BoardHelpers.Bishoppair);
+            value += SmartWeight(board, m_Weights.Knightmob, BoardHelpers.Knightmob);
+            value += SmartWeight(board, m_Weights.Knightsupport, BoardHelpers.Knightsupport);
+            value += SmartWeight(board, m_Weights.Knightperiphery0, 0, BoardHelpers.Knightperiphery);
+            value += SmartWeight(board, m_Weights.Knightperiphery1, 1, BoardHelpers.Knightperiphery);
+            value += SmartWeight(board, m_Weights.Knightperiphery2, 2, BoardHelpers.Knightperiphery);
+            value += SmartWeight(board, m_Weights.Knightperiphery3, 3, BoardHelpers.Knightperiphery);
+            value += SmartWeight(board, m_Weights.Isopawn, BoardHelpers.Isopawn);
+            value += SmartWeight(board, m_Weights.Doublepawn, BoardHelpers.Doublepawn);
+            value += SmartWeight(board, m_Weights.Backwardpawn, BoardHelpers.Backwardpawn);
+            value += SmartWeight(board, m_Weights.Blockedpawn, BoardHelpers.Blockedpawn);
+            value += SmartWeight(board, m_Weights.Rookonseventh, BoardHelpers.Rookonseventh);
+            value += SmartWeight(board, m_Weights.Rookmob, BoardHelpers.Rookmob);
+            value += SmartWeight(board, m_Weights.Rookcon, BoardHelpers.Rookcon);
+            value += SmartWeight(board, m_Weights.Queenmob, BoardHelpers.Queenmob);
+
+            // Heavy cost, could be optimised by storing passpawn and rook status
+            //value += SmartWeight(board, m_Weights.Passpawn, BoardHelpers.Passpawn);
+            //value += SmartWeight(board, m_Weights.Rookbhdpasspawn, BoardHelpers.Rookbhdpasspawn);
+            //value += SmartWeight(board, m_Weights.Rankpassedpawn, BoardHelpers.Rankpassedpawn);
+            //value += SmartWeight(board, m_Weights.Blockedpassedpawn, BoardHelpers.Blockedpassedpawn);
+            //value += SmartWeight(board, m_Weights.Rookopenfile, BoardHelpers.Rookopenfile);
+            //value += SmartWeight(board, m_Weights.Rooksemiopenfile, BoardHelpers.Rooksemiopenfile);
+            //value += SmartWeight(board, m_Weights.Rookclosedfile, BoardHelpers.Rookclosedfile);
 
             return value;
+        }
+
+        private int SmartWeight(Board board, int weight, Func<Board, int> evaluator)
+        {
+            if (weight == 0)
+                return 0;
+
+            return weight * evaluator(board);
+        }
+        private int SmartWeight(Board board, int weight, int param, Func<Board, int, int> evaluator)
+        {
+            if (weight == 0)
+                return 0;
+
+            return weight * evaluator(board, param);
         }
     }
 }
