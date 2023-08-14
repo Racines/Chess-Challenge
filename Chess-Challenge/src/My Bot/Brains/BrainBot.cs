@@ -22,12 +22,15 @@ public abstract class BrainBot : IChessBot
     protected int m_MinDepth = 1;
     protected int m_MaxDepth = 100;
 
+    protected MoveOrderer m_MoveOrderer = new BasicMoveOrderer();
+
 
     public bool UseTranspositionTable { get => m_UseTranspositionTable; set => m_UseTranspositionTable = value; }
 
     public Move Think(Board board, Timer timer)
     {
-        m_DebugBoardEvaluator?.Evaluate(board);
+        var evalParams = new BoardEvaluator.EvalParameters();
+        m_DebugBoardEvaluator?.Evaluate(board, evalParams);
 
         var scoredMoves = EvaluateLegalMoves(board, timer);
 
@@ -64,7 +67,7 @@ public abstract class BrainBot : IChessBot
         MyBotLogLine($"====== Move {board.PlyCount} - allowed time: {turnTimeAllowed}");
         MyBotLogLine($"legal move: {allMoves.Length}");
 
-        var orderedMoves = OrderMoves(board, allMoves);
+        var orderedMoves = m_MoveOrderer.OrderMoves(board, allMoves);
         var scoredMoves = new ScoredMoves();
 
         do
@@ -113,7 +116,8 @@ public abstract class BrainBot : IChessBot
         // Always play checkmate in one
         if (isInCheckmate)
         {
-            score = m_BoardEvaluator.Evaluate(board);
+            var evalParams = new BoardEvaluator.EvalParameters();
+            score = m_BoardEvaluator.Evaluate(board, evalParams);
         }
         else
         {
@@ -126,12 +130,6 @@ public abstract class BrainBot : IChessBot
     }
 
     public abstract int Evaluate(Board node, Timer timer, EvaluationParameters parameters);
-
-    protected virtual Move[] OrderMoves(Board board, Move[] allMoves)
-    {
-        return allMoves;
-    }
-
 
     #region Helpers
 

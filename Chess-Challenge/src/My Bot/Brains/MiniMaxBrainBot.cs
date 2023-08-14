@@ -1,4 +1,5 @@
 ﻿using ChessChallenge.API;
+using Evaluator;
 using System;
 
 public class MiniMax1BrainBot : MiniMaxBrainBot
@@ -34,7 +35,13 @@ public class MiniMaxBrainBot : DepthBrainBot
     {
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
-            return m_BoardEvaluator.Evaluate(node);
+        {
+            var evalParams = new BoardEvaluator.EvalParameters()
+            {
+                Depth = depth,
+            };
+            return m_BoardEvaluator.Evaluate(node, evalParams);
+        }
 
         bool maximizingPlayer = node.IsWhiteToMove;
 

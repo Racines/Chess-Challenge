@@ -1,26 +1,12 @@
 ﻿using ChessChallenge.API;
-using System;
 using System.Linq;
 
-public class AlphaBetaOrderedBrainBot : AlphaBetaBrainBot
+public class BasicMoveOrderer : MoveOrderer
 {
     const int c_SquareControlledByOpponentPawnPenalty = 350;
     const int c_CapturedPieceValueMultiplier = 10;
 
-    public AlphaBetaOrderedBrainBot(int minDepth, int maxDepth)
-        :base(minDepth, maxDepth)
-    {
-    }
-    public AlphaBetaOrderedBrainBot(int maxDepth)
-        : base(maxDepth)
-    {
-    }
-    public AlphaBetaOrderedBrainBot()
-        : base()
-    {
-    }
-
-    protected override Move[] OrderMoves(Board board, Move[] allMoves)
+    public override Move[] OrderMoves(Board board, Move[] allMoves)
     {
         return allMoves.OrderByDescending(move =>
         {
@@ -49,4 +35,17 @@ public class AlphaBetaOrderedBrainBot : AlphaBetaBrainBot
             return score;
         }).ToArray();
     }
+}
+
+public class NoneMoveOrderer : MoveOrderer
+{
+    public override Move[] OrderMoves(Board board, Move[] allMoves)
+    {
+        return allMoves;
+    }
+}
+
+public abstract class MoveOrderer
+{
+    public abstract Move[] OrderMoves(Board board, Move[] allMoves);
 }

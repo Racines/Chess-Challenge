@@ -1,8 +1,9 @@
 ﻿using ChessChallenge.API;
+using Evaluator;
 using System;
 using System.Collections.Generic;
 
-public class AlphaBeta1BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta1BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta1BrainBot()
         :base(1)
@@ -10,7 +11,7 @@ public class AlphaBeta1BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBeta2BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta2BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta2BrainBot()
         : base(2)
@@ -18,7 +19,7 @@ public class AlphaBeta2BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBeta2AdvancedEvalBrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta2AdvancedEvalBrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta2AdvancedEvalBrainBot()
         : base(2)
@@ -27,7 +28,7 @@ public class AlphaBeta2AdvancedEvalBrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta3BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta3BrainBot()
         : base(3)
@@ -35,7 +36,16 @@ public class AlphaBeta3BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBeta3AdvancedEvalBrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta3QuiescenseBrainBot : AlphaBetaBrainBot
+{
+    public AlphaBeta3QuiescenseBrainBot()
+        : base(3)
+    {
+        m_BoardEvaluator = new QuiescenseBasicEvaluator();
+    }
+}
+
+public class AlphaBeta3AdvancedEvalBrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta3AdvancedEvalBrainBot()
         : base(3)
@@ -53,11 +63,19 @@ public class AlphaBeta3NoTranspositionBrainBot : AlphaBeta3BrainBot
     }
 }
 
-public class AlphaBeta4BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta4BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta4BrainBot()
         : base(4)
     {
+    }
+}
+public class AlphaBeta4AdvancedEvalBrainBot : AlphaBetaBrainBot
+{
+    public AlphaBeta4AdvancedEvalBrainBot()
+        : base(4)
+    {
+        m_BoardEvaluator = Evaluators.s_AdvancedEvaluator;
     }
 }
 public class AlphaBeta4NoTranspositionBrainBot : AlphaBeta4BrainBot
@@ -69,7 +87,7 @@ public class AlphaBeta4NoTranspositionBrainBot : AlphaBeta4BrainBot
     }
 }
 
-public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta5BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta5BrainBot()
         : base(5)
@@ -77,7 +95,7 @@ public class AlphaBeta5BrainBot : AlphaBetaOrderedBrainBot
     }
 }
 
-public class AlphaBeta100BrainBot : AlphaBetaOrderedBrainBot
+public class AlphaBeta100BrainBot : AlphaBetaBrainBot
 {
     public AlphaBeta100BrainBot()
         : base(100)
@@ -128,14 +146,20 @@ public class AlphaBetaBrainBot : BrainBot
         // if max depth is reach or if node is terminal => return heuristic value of the node
         if (depth == 0 || node.IsTerminal())
         {
-            value = m_BoardEvaluator.Evaluate(node);
+            var evalParameters = new BoardEvaluator.EvalParameters()
+            {
+                Alpha = alpha,
+                Beta = beta,
+                Depth = depth,
+            };
+            value = m_BoardEvaluator.Evaluate(node, evalParameters);
             if (m_UseTranspositionTable)
                 m_TranspositionTable.TryAdd(node, depth, value, ETranspositionTableNodeType.Exact);
             return value;
         }
 
         // minimize or maximize the value depending on given maximizingPlayer
-        Func<int, int, int> func = Math.Max; 
+        Func<int, int, int> func = Math.Max;
         value = int.MinValue;
         if (!maximizingPlayer)
         {
@@ -146,7 +170,7 @@ public class AlphaBetaBrainBot : BrainBot
         // For each legal move
         Move[] moves = node.GetLegalMoves();
         // optionnal order
-        var orderedMoves = OrderMoves(node, moves);
+        var orderedMoves = m_MoveOrderer.OrderMoves(node, moves);
 
         foreach (var move in orderedMoves)
         {
@@ -158,7 +182,7 @@ public class AlphaBetaBrainBot : BrainBot
             if (maximizingPlayer)
             {
                 // check beta pruning
-                if (value >= beta) 
+                if (value >= beta)
                     break;
 
                 // update alpha value

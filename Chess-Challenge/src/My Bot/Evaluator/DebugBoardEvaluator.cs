@@ -10,7 +10,7 @@ namespace Evaluator
 {
     public class DebugBoardEvaluator : BoardEvaluator
     {
-        public override int Evaluate(Board board)
+        public override int Evaluate(Board board, EvalParameters parameters)
         {
             return 0;
             //Console.WriteLine(board);

@@ -66,7 +66,7 @@ namespace Evaluator
 
         public BoardEvaluatorWeights Weights => m_Weights;
 
-        public override int Evaluate(Board board)
+        public override int Evaluate(Board board, EvalParameters parameters)
         {
             // Heuristic value for checkmate 
             if (board.IsInCheckmate())

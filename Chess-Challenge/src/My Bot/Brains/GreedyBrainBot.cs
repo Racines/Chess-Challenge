@@ -1,4 +1,5 @@
 ﻿using ChessChallenge.API;
+using Evaluator;
 using System;
 
 
@@ -6,7 +7,8 @@ public class GreedyAdvancedEvalBrainBot : BrainBot
 {
     public override int Evaluate(Board node, Timer timer, EvaluationParameters parameters)
     {
-        return Evaluators.s_AdvancedEvaluator.Evaluate(node);
+        var evalParams = new BoardEvaluator.EvalParameters();
+        return Evaluators.s_AdvancedEvaluator.Evaluate(node, evalParams);
     }
 }
 
